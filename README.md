@@ -1,2 +1,2 @@
-Ensues.Cryptography
+Ensues.Security
 ===================
