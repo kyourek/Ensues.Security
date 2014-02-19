@@ -14,34 +14,54 @@ namespace Ensues.Security.Cryptography {
         private string Compute(string password, HashFunction hashFunction, Int32 hashIterations, byte[] salt) {
             if (null == salt) throw new ArgumentNullException("salt");
 
+            // Converts the plain-text password into a byte array
+            // and adds the specified salt.
             var passwordBytes = PasswordEncoding.GetBytes(password);
             var passwordAndSalt = passwordBytes
                 .Concat(salt)
                 .ToArray();
 
+            // Creates the hash algorithm that is used to generate
+            // the password hash.
             var hash = default(byte[]);
             using (var algo = CreateHashAlgorithm(hashFunction)) {
 
+                // The hash is initialized by hashing the password
+                // and salt.
                 algo.Initialize();
                 hash = algo.ComputeHash(passwordAndSalt);
 
+                // Performs key stretching over the specified number
+                // of hash iterations.
                 foreach (var _ in Enumerable.Range(0, hashIterations)) {
                     
+                    // The hash is modified during each iteration by
+                    // computing another hash of the previous hash
+                    // and the entered password.
                     hash = algo.ComputeHash(
                         hash.Concat(passwordBytes).ToArray()
                     );
                 }
 
+                // The hashing algorithm isn't needed anymore.
                 algo.Clear();
             }
 
+            // Gets the length of the salt as a byte array
+            // so it can be added to the final computation.
             var saltLength = salt.Length;
             var saltLengthBytes = BitConverter.GetBytes(saltLength);
 
+            // Gets the type of hash function and the number
+            // of iterations as byte arrays so they can be
+            // added to the final computation.
             var hashFunctionBytes = BitConverter.GetBytes((short)hashFunction);
             var hashIterationBytes = BitConverter.GetBytes(hashIterations);
 
-            var passwordData = new byte[] { }
+            // Creates a single byte array of all the data
+            // required to recreate the computation for the
+            // given password.
+            var computedResult = new byte[] { }
                 .Concat(saltLengthBytes)
                 .Concat(salt)
                 .Concat(hashFunctionBytes)
@@ -49,18 +69,34 @@ namespace Ensues.Security.Cryptography {
                 .Concat(hash)
                 .ToArray();
 
-            return Convert.ToBase64String(passwordData);
+            // Return the data encoded as a string.
+            return Convert.ToBase64String(computedResult);
         }
 
+        internal ConstantTimeComparer ConstantTimeComparer {
+            get { return _ConstantTimeComparer ?? (_ConstantTimeComparer = new ConstantTimeComparer()); }
+            set { _ConstantTimeComparer = value; }
+        }
+        private ConstantTimeComparer _ConstantTimeComparer;
+
+        /// <summary>
+        /// Creates a new instance of <see cref="T:HashAlgorithm"/> for the specified <paramref name="hashFunction"/>.
+        /// </summary>
+        /// <param name="hashFunction">
+        /// A value that defines the type of <see cref="T:HashAlgorithm"/> that is created.
+        /// </param>
+        /// <returns>
+        /// A new instance of <see cref="T:HashAlgorithm"/> for the specified <paramref name="hashFunction"/>.
+        /// </returns>
         protected virtual HashAlgorithm CreateHashAlgorithm(HashFunction hashFunction) {
 
             switch (hashFunction) {
 
-                case HashFunction.SHA1:
-                    return SHA1.Create();
-
                 case HashFunction.SHA256:
                     return SHA256.Create();
+
+                case HashFunction.SHA384:
+                    return SHA384.Create();
 
                 case HashFunction.SHA512:
                     return SHA512.Create();
@@ -71,9 +107,26 @@ namespace Ensues.Security.Cryptography {
             }
         }
 
+        /// <summary>
+        /// Creates a new instance of <see cref="T:RandomNumberGenerator"/>.
+        /// </summary>
+        /// <returns>
+        /// A new instance of <see cref="T:RandomNumberGenerator"/>.
+        /// </returns>
         protected virtual RandomNumberGenerator CreateRandomNumberGenerator() {
             return RandomNumberGenerator.Create();
         }
+
+        /// <summary>
+        /// Gets or sets a value that indicates whether or not a
+        /// constant-time comparison is used when comparing a password
+        /// to its computed result.
+        /// </summary>
+        public bool CompareInConstantTime {
+            get { return _CompareInConstantTime; }
+            set { _CompareInConstantTime = value; }
+        }
+        private bool _CompareInConstantTime = true;
 
         /// <summary>
         /// Gets or sets the <see cref="T:HashFunction"/> used while
@@ -83,7 +136,7 @@ namespace Ensues.Security.Cryptography {
             get { return _HashFunction; }
             set { _HashFunction = value; }
         }
-        private HashFunction _HashFunction = HashFunction.SHA512;
+        private HashFunction _HashFunction = HashFunction.SHA256;
 
         /// <summary>
         /// Gets or sets the length, in bytes, of salts created
@@ -91,7 +144,10 @@ namespace Ensues.Security.Cryptography {
         /// </summary>
         public Int32 SaltLength {
             get { return _SaltLength; }
-            set { _SaltLength = value; }
+            set {
+                if (0 > value) throw new ArgumentOutOfRangeException("SaltLength", "The salt length cannot be less than 0.");
+                _SaltLength = value;
+            }
         }
         private Int32 _SaltLength = 16;
 
@@ -101,7 +157,10 @@ namespace Ensues.Security.Cryptography {
         /// </summary>
         public Int32 HashIterations {
             get { return _HashIterations; }
-            set { _HashIterations = value; }
+            set {
+                if (0 > value) throw new ArgumentOutOfRangeException("HashIterations", "The number of hash iterations cannot be less than 0.");
+                _HashIterations = value;
+            }
         }
         private Int32 _HashIterations = 1000;
 
@@ -187,7 +246,12 @@ namespace Ensues.Security.Cryptography {
             var expected = Compute(password, hashFunction, hashIterations, salt);
             var actual = computedResult;
 
-            return string.Equals(expected, actual);
+            // Return whether or not the strings are equal. If
+            // the flag is set, then do the comparison in constant
+            // time.
+            return CompareInConstantTime
+                ? ConstantTimeComparer.Equals(expected, actual)
+                : string.Equals(expected, actual);
         }
     }
 }
