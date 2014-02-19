@@ -11,45 +11,12 @@ namespace Ensues.Security.Cryptography {
         private static readonly int Int16ByteLength = BitConverter.GetBytes(default(Int16)).Length;
         private static readonly int Int32ByteLength = BitConverter.GetBytes(default(Int32)).Length;
 
-        private string Compute(string password, HashFunction hashFunction, Int32 hashIterations, byte[] salt) {
-            if (null == salt) throw new ArgumentNullException("salt");
-
-            // Converts the plain-text password into a byte array
-            // and adds the specified salt.
-            var passwordBytes = PasswordEncoding.GetBytes(password);
-            var passwordAndSalt = passwordBytes
-                .Concat(salt)
-                .ToArray();
-
-            // Creates the hash algorithm that is used to generate
-            // the password hash.
-            var hash = default(byte[]);
-            using (var algo = CreateHashAlgorithm(hashFunction)) {
-
-                // The hash is initialized by hashing the password
-                // and salt.
-                algo.Initialize();
-                hash = algo.ComputeHash(passwordAndSalt);
-
-                // Performs key stretching over the specified number
-                // of hash iterations.
-                foreach (var _ in Enumerable.Range(0, hashIterations)) {
-                    
-                    // The hash is modified during each iteration by
-                    // computing another hash of the previous hash
-                    // and the entered password.
-                    hash = algo.ComputeHash(
-                        hash.Concat(passwordBytes).ToArray()
-                    );
-                }
-
-                // The hashing algorithm isn't needed anymore.
-                algo.Clear();
-            }
+        private string Compute(string password, HashFunction hashFunction, Int32 hashIterations, byte[] saltBytes) {
+            if (null == saltBytes) throw new ArgumentNullException("saltBytes");
 
             // Gets the length of the salt as a byte array
             // so it can be added to the final computation.
-            var saltLength = salt.Length;
+            var saltLength = Convert.ToInt16(saltBytes.Length);
             var saltLengthBytes = BitConverter.GetBytes(saltLength);
 
             // Gets the type of hash function and the number
@@ -58,15 +25,47 @@ namespace Ensues.Security.Cryptography {
             var hashFunctionBytes = BitConverter.GetBytes((short)hashFunction);
             var hashIterationBytes = BitConverter.GetBytes(hashIterations);
 
+            // Converts the plain-text password into a byte array
+            // and adds the specified salt.
+            var passwordBytes = PasswordEncoding.GetBytes(password);
+            var passwordAndSaltBytes = passwordBytes
+                .Concat(saltBytes)
+                .ToArray();
+
+            // Creates the hash algorithm that is used to generate
+            // the password hash.
+            var hashBytes = default(byte[]);
+            using (var algo = CreateHashAlgorithm(hashFunction)) {
+
+                // The hash is initialized by hashing the password
+                // and salt.
+                algo.Initialize();
+                hashBytes = algo.ComputeHash(passwordAndSaltBytes);
+
+                // Performs key stretching over the specified number
+                // of hash iterations.
+                while (hashIterations-- > 0) {
+                    
+                    // The hash is modified during each iteration by
+                    // computing another hash of the previous hash
+                    // and the entered password.
+                    hashBytes = hashBytes.Concat(passwordAndSaltBytes).ToArray();
+                    hashBytes = algo.ComputeHash(hashBytes);
+                }
+
+                // The hashing algorithm isn't needed anymore.
+                algo.Clear();
+            }
+
             // Creates a single byte array of all the data
             // required to recreate the computation for the
             // given password.
             var computedResult = new byte[] { }
                 .Concat(saltLengthBytes)
-                .Concat(salt)
+                .Concat(saltBytes)
                 .Concat(hashFunctionBytes)
                 .Concat(hashIterationBytes)
-                .Concat(hash)
+                .Concat(hashBytes)
                 .ToArray();
 
             // Return the data encoded as a string.
@@ -142,14 +141,14 @@ namespace Ensues.Security.Cryptography {
         /// Gets or sets the length, in bytes, of salts created
         /// for new passwords.
         /// </summary>
-        public Int32 SaltLength {
+        public Int16 SaltLength {
             get { return _SaltLength; }
             set {
                 if (0 > value) throw new ArgumentOutOfRangeException("SaltLength", "The salt length cannot be less than 0.");
                 _SaltLength = value;
             }
         }
-        private Int32 _SaltLength = 16;
+        private Int16 _SaltLength = 16;
 
         /// <summary>
         /// Gets or sets the number of key-stretching iterations
@@ -217,17 +216,17 @@ namespace Ensues.Security.Cryptography {
             // The first group of bytes identifies how long the
             // password's salt is. Once we know how long it is,
             // we can get the actual salt.
-            var saltLengthBytes = bytes.Take(Int32ByteLength).ToArray();
-            var saltLength = BitConverter.ToInt32(saltLengthBytes, 0);
+            var saltLengthBytes = bytes.Take(Int16ByteLength).ToArray();
+            var saltLength = BitConverter.ToInt16(saltLengthBytes, 0);
             var salt = bytes
-                .Skip(Int32ByteLength)
+                .Skip(Int16ByteLength)
                 .Take(saltLength)
                 .ToArray();
 
             // The next group of bytes identifies the hash function
             // that was used when the password was created.
             var hashFunctionBytes = bytes
-                .Skip(Int32ByteLength + saltLength)
+                .Skip(Int16ByteLength + saltLength)
                 .Take(Int16ByteLength)
                 .ToArray();
             var hashFunction = (HashFunction)BitConverter.ToInt16(hashFunctionBytes, 0);
@@ -235,7 +234,7 @@ namespace Ensues.Security.Cryptography {
             // And the last encoded group identifies the number of
             // key-stretching iterations to perform.
             var hashIterationBytes = bytes
-                .Skip(Int32ByteLength + saltLength + Int16ByteLength)
+                .Skip(Int16ByteLength + saltLength + Int16ByteLength)
                 .Take(Int32ByteLength)
                 .ToArray();
             var hashIterations = BitConverter.ToInt32(hashIterationBytes, 0);

@@ -52,11 +52,10 @@ namespace Ensues.Security.Cryptography.Tests {
 
             var password = "This 1 is a stronger passw0rd.";
 
-            var algo = new PasswordAlgorithm();
+            var algo = new PasswordAlgorithm { SaltLength = 8 };
             var computed = algo.Compute(password);
 
-            algo.SaltLength = 999999;
-
+            algo.SaltLength = 88;
             Assert.IsTrue(algo.Compare(password, computed));
         }
 
