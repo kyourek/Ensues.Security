@@ -57,7 +57,7 @@
     <Compile Include="Security\Cryptography\Tests\PasswordAlgorithmTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Ensues.Cryptography\Ensues.Security.csproj">
+    <ProjectReference Include="..\Ensues.Security\Ensues.Security.csproj">
       <Project>{226c4bd4-624b-421d-93d0-88605569e0a2}</Project>
       <Name>Ensues.Security</Name>
     </ProjectReference>

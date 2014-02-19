@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2013 for Web
 VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ensues.Security", "Ensues.Cryptography\Ensues.Security.csproj", "{226C4BD4-624B-421D-93D0-88605569E0A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ensues.Security", "Ensues.Security\Ensues.Security.csproj", "{226C4BD4-624B-421D-93D0-88605569E0A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ensues.Security.Tests", "Ensues.Cryptography.Tests\Ensues.Security.Tests.csproj", "{6613A762-94FF-46D5-8249-5CBB0FC24F7E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ensues.Security.Tests", "Ensues.Security.Tests\Ensues.Security.Tests.csproj", "{6613A762-94FF-46D5-8249-5CBB0FC24F7E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
