@@ -218,7 +218,7 @@ namespace Ensues.Security.Cryptography {
             // we can get the actual salt.
             var saltLengthBytes = bytes.Take(Int16ByteLength).ToArray();
             var saltLength = BitConverter.ToInt16(saltLengthBytes, 0);
-            var salt = bytes
+            var saltBytes = bytes
                 .Skip(Int16ByteLength)
                 .Take(saltLength)
                 .ToArray();
@@ -242,7 +242,7 @@ namespace Ensues.Security.Cryptography {
             // The salt, hash function, and number of key-stretching 
             // iterations are known, so we can compute the password 
             // using the same algorithm with which it was created.
-            var expected = Compute(password, hashFunction, hashIterations, salt);
+            var expected = Compute(password, hashFunction, hashIterations, saltBytes);
             var actual = computedResult;
 
             // Return whether or not the strings are equal. If
