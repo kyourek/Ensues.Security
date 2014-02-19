@@ -133,27 +133,27 @@ namespace Ensues.Security.Cryptography {
 
         /// <summary>
         /// Compares the user-entered <paramref name="password"/> to the
-        /// <paramref name="computedPassword"/> that was computed using
+        /// <paramref name="computedResult"/> that was computed using
         /// an instance of this <see cref="T:PasswordAlgorithm"/>.
         /// </summary>
         /// <param name="password">
         /// The plain-text, user-entered string.
         /// </param>
-        /// <param name="computedPassword">
+        /// <param name="computedResult">
         /// The result of a previous call to <see cref="PasswordAlgorithm.Compute"/>
         /// using <paramref name="password"/> as the parameter.
         /// </param>
         /// <returns>
         /// <c>true</c> if the <paramref name="password"/> is the same as the
         /// parameter to <see cref="PasswordAlgorithm.Compute"/> that returned
-        /// the <paramref name="computedPassword"/>. Otherwise, <c>false</c>.
+        /// the <paramref name="computedResult"/>. Otherwise, <c>false</c>.
         /// </returns>
-        public bool Compare(string password, string computedPassword) {
+        public bool Compare(string password, string computedResult) {
 
             // All of the password data is encoded as a base-64
             // string, so we start by getting that data as a
             // byte array.
-            var bytes = Convert.FromBase64String(computedPassword);
+            var bytes = Convert.FromBase64String(computedResult);
 
             // The first group of bytes identifies how long the
             // password's salt is. Once we know how long it is,
@@ -185,7 +185,7 @@ namespace Ensues.Security.Cryptography {
             // iterations are known, so we can compute the password 
             // using the same algorithm with which it was created.
             var expected = Compute(password, hashFunction, hashIterations, salt);
-            var actual = computedPassword;
+            var actual = computedResult;
 
             return string.Equals(expected, actual);
         }
