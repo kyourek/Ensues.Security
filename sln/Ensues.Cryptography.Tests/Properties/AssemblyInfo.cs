@@ -2,11 +2,11 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Ensues.Cryptography.Tests")]
+[assembly: AssemblyTitle("Ensues.Security.Tests")]
 [assembly: AssemblyDescription("Ensues Cryptography Tests")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Ken Yourek")]
-[assembly: AssemblyProduct("Ensues.Cryptography.Tests")]
+[assembly: AssemblyProduct("Ensues.Security.Tests")]
 [assembly: AssemblyCopyright("Copyright © Ken Yourek 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
