@@ -264,5 +264,26 @@ namespace Ensues.Security.Cryptography.Tests {
             Assert.IsNull(xstr);
             Assert.IsNull(ystr);
         }
+
+        public void bl() {
+
+
+            var pa = new PasswordAlgorithm();
+
+            var computedResult_1 = pa.Compute("my password");
+            pa.Compare("my password", computedResult_1);                // Returns true.
+
+            pa.SaltLength = 64;
+            pa.HashFunction = HashFunction.SHA512;
+            pa.HashIterations = 10000;
+
+            var computedResult_2 = pa.Compute("another password");      // Creates an encoded password hash using a
+                                                                        // longer salt, a stronger hash function, and
+                                                                        // more key-stretching iterations than before.
+
+            pa.Compare("my password", computedResult_1);                // Still returns true, because the previous
+                                                                        // salt length, hash function, and key-stretching
+                                                                        // iterations are stored in computedResult_1.
+        }
     }
 }
