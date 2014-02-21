@@ -1,28 +1,29 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using NUnit.Framework;
 
 namespace Ensues.Security.Cryptography.Tests {
     
-    [TestClass]
+    [TestFixture]
     public class PasswordAlgorithmTests {
     
-        [TestMethod]
+        [Test]
         public void SaltLength_IsInitially16() {
             Assert.AreEqual(16, new PasswordAlgorithm().SaltLength);
         }
 
-        [TestMethod]
+        [Test]
         public void HashIterations_IsInitially1000() {
             Assert.AreEqual(1000, new PasswordAlgorithm().HashIterations);
         }
 
-        [TestMethod]
+        [Test]
         public void HashFunction_IsInitiallySHA256() {
             Assert.AreEqual(HashFunction.SHA256, new PasswordAlgorithm().HashFunction);
         }
 
-        [TestMethod]
+        [Test]
         public void Compare_ReturnsTrueForEqualPasswords() {
 
             var password = "A weak password!";
@@ -34,7 +35,7 @@ namespace Ensues.Security.Cryptography.Tests {
             Assert.IsTrue(algo.Compare(password, computed));
         }
 
-        [TestMethod]
+        [Test]
         public void Compare_WorksAfterHashIterationsIsChanged() {
 
             var password = "not much better";
@@ -47,7 +48,7 @@ namespace Ensues.Security.Cryptography.Tests {
             Assert.IsTrue(algo.Compare(password, computed));
         }
 
-        [TestMethod]
+        [Test]
         public void Compare_WorksAfterSaltLengthIsChanged() {
 
             var password = "This 1 is a stronger passw0rd.";
@@ -59,26 +60,26 @@ namespace Ensues.Security.Cryptography.Tests {
             Assert.IsTrue(algo.Compare(password, computed));
         }
 
-        [TestMethod]
+        [Test]
         public void Compare_ReturnsFalseForDifferentCase() {
             var algo = new PasswordAlgorithm();
             var computed = algo.Compute("different case");
             Assert.IsFalse(algo.Compare("different caSe", computed));
         }
 
-        [TestMethod]
+        [Test]
         public void Compare_ReturnsFalseForUnequalStringLengths() {
             var algo = new PasswordAlgorithm();
             var computed = algo.Compute("different length");
             Assert.IsFalse(algo.Compare("different length ", computed));
         }
 
-        [TestMethod]
+        [Test]
         public void CompareInConstantTime_IsInitiallyTrue() {
             Assert.IsTrue(new PasswordAlgorithm().CompareInConstantTime);
         }
 
-        [TestMethod]
+        [Test]
         public void CompareInConstantTime_CanBeSet() {
             var algo = new PasswordAlgorithm();
             foreach (var b in new[] { true, false, true }) {
@@ -87,7 +88,7 @@ namespace Ensues.Security.Cryptography.Tests {
             }
         }
 
-        [TestMethod]
+        [Test]
         public void HashFunction_CanBeSet() {
             var algo = new PasswordAlgorithm();
             var values = Enum.GetValues(typeof(HashFunction)).Cast<HashFunction>().ToList();
@@ -98,7 +99,7 @@ namespace Ensues.Security.Cryptography.Tests {
             }
         }
 
-        [TestMethod]
+        [Test]
         public void Compare_WorksWithAllHashFunctions() {
             var algo = new PasswordAlgorithm();
             var computedResults = Enum.GetValues(typeof(HashFunction))
@@ -116,7 +117,7 @@ namespace Ensues.Security.Cryptography.Tests {
             }
         }
 
-        [TestMethod]
+        [Test]
         public void Compute_CreatesDifferentResultsWithDifferentHashFunctions() {
             var algo = new PasswordAlgorithm();
             var password = "1234";
@@ -134,7 +135,7 @@ namespace Ensues.Security.Cryptography.Tests {
             Assert.IsTrue(sha512Result.Length > sha384Result.Length);
         }
 
-        [TestMethod]
+        [Test]
         public void HashIterations_ChangesComputedResult() {
             var algo = new PasswordAlgorithm();
             var password = "password";
@@ -148,7 +149,7 @@ namespace Ensues.Security.Cryptography.Tests {
             Assert.AreEqual(results.Count(), results.Distinct().Count());
         }
 
-        [TestMethod]
+        [Test]
         public void Compute_ComputesDifferentResultsForSamePassword() {
             var algo = new PasswordAlgorithm();
             var password = "asdfjkl;";
@@ -159,7 +160,7 @@ namespace Ensues.Security.Cryptography.Tests {
             Assert.AreNotEqual(result1, result2);
         }
 
-        [TestMethod]
+        [Test]
         public void SaltLength_0Works() {
             var algo = new PasswordAlgorithm();
             var password = "1234";
@@ -170,7 +171,7 @@ namespace Ensues.Security.Cryptography.Tests {
             Assert.IsTrue(algo.Compare(password, computedResult));
         }
 
-        [TestMethod]
+        [Test]
         public void SaltLength_ThrowsExceptionIfLessThan0() {
             var algo = new PasswordAlgorithm();
 
@@ -183,7 +184,7 @@ namespace Ensues.Security.Cryptography.Tests {
             }
         }
 
-        [TestMethod]
+        [Test]
         public void HashIterations_ThrowsExceptionIfLessThan0() {
             var algo = new PasswordAlgorithm();
 
