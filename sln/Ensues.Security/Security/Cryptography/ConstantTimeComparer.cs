@@ -32,7 +32,9 @@ namespace Ensues.Security.Cryptography {
                 diff |= (uint)(s1[i] ^ s2[i]);
             }
 
-            return diff == 0;
+            return x == null || y == null
+                ? x == null && y == null
+                : diff == 0;
         }
 
         public virtual int GetHashCode(string obj) {

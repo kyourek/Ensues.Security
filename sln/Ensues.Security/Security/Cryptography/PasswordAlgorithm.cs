@@ -119,7 +119,7 @@ namespace Ensues.Security.Cryptography {
         /// <summary>
         /// Gets or sets a value that indicates whether or not a
         /// constant-time comparison is used when comparing a password
-        /// to its computed result.
+        /// to its computed result. The default value is <c>true</c>.
         /// </summary>
         public bool CompareInConstantTime {
             get { return _CompareInConstantTime; }
@@ -129,7 +129,7 @@ namespace Ensues.Security.Cryptography {
 
         /// <summary>
         /// Gets or sets the <see cref="T:HashFunction"/> used while
-        /// hashing new passwords.
+        /// hashing new passwords. The default value is <see cref="HashFunction.SHA256"/>.
         /// </summary>
         public HashFunction HashFunction {
             get { return _HashFunction; }
@@ -139,7 +139,7 @@ namespace Ensues.Security.Cryptography {
 
         /// <summary>
         /// Gets or sets the length, in bytes, of salts created
-        /// for new passwords.
+        /// for new passwords. The default value is <c>16</c>.
         /// </summary>
         public Int16 SaltLength {
             get { return _SaltLength; }
@@ -152,7 +152,8 @@ namespace Ensues.Security.Cryptography {
 
         /// <summary>
         /// Gets or sets the number of key-stretching iterations
-        /// to perform while hashing new passwords.
+        /// to perform while hashing new passwords. The default
+        /// value is <c>1000</c>.
         /// </summary>
         public Int32 HashIterations {
             get { return _HashIterations; }
@@ -174,7 +175,7 @@ namespace Ensues.Security.Cryptography {
         /// A string that can later be used in <see cref="PasswordAlgorithm.Compare"/>
         /// to determine password validity.
         /// </returns>
-        public string Compute(string password) {
+        public virtual string Compute(string password) {
 
             // First, generate a salt using a random number generator.
             var salt = new byte[SaltLength];
@@ -206,7 +207,7 @@ namespace Ensues.Security.Cryptography {
         /// parameter to <see cref="PasswordAlgorithm.Compute"/> that returned
         /// the <paramref name="computedResult"/>. Otherwise, <c>false</c>.
         /// </returns>
-        public bool Compare(string password, string computedResult) {
+        public virtual bool Compare(string password, string computedResult) {
 
             // All of the password data is encoded as a base-64
             // string, so we start by getting that data as a
@@ -242,15 +243,14 @@ namespace Ensues.Security.Cryptography {
             // The salt, hash function, and number of key-stretching 
             // iterations are known, so we can compute the password 
             // using the same algorithm with which it was created.
-            var expected = Compute(password, hashFunction, hashIterations, saltBytes);
-            var actual = computedResult;
+            var expectedResult = Compute(password, hashFunction, hashIterations, saltBytes);
 
             // Return whether or not the strings are equal. If
             // the flag is set, then do the comparison in constant
             // time.
             return CompareInConstantTime
-                ? ConstantTimeComparer.Equals(expected, actual)
-                : string.Equals(expected, actual);
+                ? ConstantTimeComparer.Equals(expectedResult, computedResult)
+                : string.Equals(expectedResult, computedResult);
         }
     }
 }

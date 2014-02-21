@@ -32,9 +32,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\ConfigurationSection.cs" />
+    <Compile Include="Configuration\PasswordAlgorithmElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\Cryptography\ConstantTimeComparer.cs" />
     <Compile Include="Security\Cryptography\HashFunction.cs" />

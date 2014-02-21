@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 
 using NUnit.Framework;
 
@@ -7,7 +8,16 @@ namespace Ensues.Security.Cryptography.Tests {
     
     [TestFixture]
     public class PasswordAlgorithmTests {
-    
+
+        private class ConstantTimeComparerMock : ConstantTimeComparer {
+
+            public Func<string, string, bool> OnEquals { get; set; }
+
+            public override bool Equals(string x, string y) {
+                return OnEquals(x, y);
+            }
+        }
+
         [Test]
         public void SaltLength_IsInitially16() {
             Assert.AreEqual(16, new PasswordAlgorithm().SaltLength);
@@ -195,6 +205,64 @@ namespace Ensues.Security.Cryptography.Tests {
             catch (ArgumentOutOfRangeException ex) {
                 Assert.AreEqual("HashIterations", ex.ParamName);
             }
+        }
+
+        [Test]
+        public void Compare_UsesConstantTimeComparer() {
+            var retv = default(bool);
+            var xstr = default(string);
+            var ystr = default(string);
+            var func = new Func<string, string, bool>((x, y) => {
+                xstr = x;
+                ystr = y;
+                return retv;
+            });
+
+            var mock = new ConstantTimeComparerMock { OnEquals = func };
+            var algo = new PasswordAlgorithm { 
+                ConstantTimeComparer = mock,
+                CompareInConstantTime = true
+            };
+
+            foreach (var v in new[] { true, false }) {
+
+                retv = v;
+
+                var password = "password " + retv;
+                var computed = algo.Compute(password);
+
+                Assert.AreEqual(retv, algo.Compare(password, computed));
+                Assert.AreEqual(computed, xstr);
+                Assert.AreEqual(computed, ystr);
+            }
+        }
+
+        [Test]
+        public void Compare_DoesNotUseConstantTimeComparer() {
+            var retv = default(bool);
+            var xstr = default(string);
+            var ystr = default(string);
+            var func = new Func<string, string, bool>((x, y) => {
+                xstr = x;
+                ystr = y;
+                return retv;
+            });
+
+            var mock = new ConstantTimeComparerMock { OnEquals = func };
+            var algo = new PasswordAlgorithm {
+                ConstantTimeComparer = mock,
+                CompareInConstantTime = false
+            };
+
+            var password = "pass";
+            var computed = algo.Compute(password);
+
+            retv = false;
+
+            Assert.IsTrue(algo.Compare(password, computed));
+
+            Assert.IsNull(xstr);
+            Assert.IsNull(ystr);
         }
     }
 }
