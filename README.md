@@ -3,7 +3,7 @@ Ensues.Security
 
 **Ensues.Security** contains a password algorithm that allows new passwords to be made more robust while not affecting old passwords.
 
-`PasswordAlgorithm` defaults to using the SHA-256 `HashAlgorithm` and 1000 key-stretching iterations. If requirements change, the `HashAlgorithm` and number of key-stretching iterations can change without having to alter previously created passwords or using a database schema. This is possible because information about how the password hash was created is stored in the encoded password itself.
+`PasswordAlgorithm` defaults to using the SHA-256 `HashAlgorithm` and 1000 key-stretching iterations. If requirements change, the `HashAlgorithm` and number of key-stretching iterations can change without having to alter previously created passwords or use a database schema. This is possible because information about how the password hash was created is stored in the encoded password itself.
 
 Usage
 ===================
