@@ -7,10 +7,32 @@ namespace Ensues.Security.Cryptography {
 
     public class PasswordAlgorithm {
 
+        /// <summary>
+        /// This is the encoding used to convert a plain-text password
+        /// into an array of bytes.
+        /// </summary>
         private static readonly Encoding PasswordEncoding = Encoding.UTF8;
+
+        /// <summary>
+        /// The number of items in a byte array created from a 16-bit integer.
+        /// </summary>
         private static readonly int Int16ByteLength = BitConverter.GetBytes(default(Int16)).Length;
+
+        /// <summary>
+        /// The number of items in a byte array created from a 32-bit integer.
+        /// </summary>
         private static readonly int Int32ByteLength = BitConverter.GetBytes(default(Int32)).Length;
 
+        /// <summary>
+        /// Creates a hash of the <paramref name="password"/> using the specified parameters.
+        /// </summary>
+        /// <param name="password">The string for which the hash is created.</param>
+        /// <param name="hashFunction">The type of hash function to use to create the hash.</param>
+        /// <param name="hashIterations">The number of key-stretching iterations to complete when creating the hash.</param>
+        /// <param name="saltBytes">The salt for <paramref name="password"/> as an array of bytes.</param>
+        /// <returns>
+        /// The created hash of the <paramref name="password"/>.
+        /// </returns>
         private string Compute(string password, HashFunction hashFunction, Int32 hashIterations, byte[] saltBytes) {
             if (null == saltBytes) throw new ArgumentNullException("saltBytes");
 
@@ -72,6 +94,9 @@ namespace Ensues.Security.Cryptography {
             return Convert.ToBase64String(computedResult);
         }
 
+        /// <summary>
+        /// Gets or sets the object used to compare strings in constant time.
+        /// </summary>
         internal ConstantTimeComparer ConstantTimeComparer {
             get { return _ConstantTimeComparer ?? (_ConstantTimeComparer = new ConstantTimeComparer()); }
             set { _ConstantTimeComparer = value; }
