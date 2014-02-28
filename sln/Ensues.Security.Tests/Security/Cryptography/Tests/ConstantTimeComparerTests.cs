@@ -23,5 +23,14 @@ namespace Ensues.Security.Cryptography.Tests {
             Assert.IsFalse(c.Equals("different case", "diFferent case"));
             Assert.IsFalse(c.Equals("different length", "different length "));
         }
+
+        [Test]
+        public void Equals_ExtendedStringsAreNotEqual() {
+            var s1 = "s";
+            var s2 = "s____";
+
+            var c = new ConstantTimeComparer();
+            Assert.IsFalse(c.Equals(s1, s2));
+        }
     }
 }

@@ -34,7 +34,7 @@ namespace Ensues.Security.Cryptography {
 
             return x == null || y == null
                 ? x == null && y == null
-                : diff == 0;
+                : s1len == s2len && diff == 0;
         }
 
         public virtual int GetHashCode(string obj) {
