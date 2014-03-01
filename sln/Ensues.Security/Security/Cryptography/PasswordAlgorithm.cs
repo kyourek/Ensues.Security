@@ -57,12 +57,12 @@ namespace Ensues.Security.Cryptography {
             // Creates the hash algorithm that is used to generate
             // the password hash.
             var hashBytes = default(byte[]);
-            using (var algo = CreateHashAlgorithm(hashFunction)) {
+            using (var hashAlgorithm = CreateHashAlgorithm()) {
 
                 // The hash is initialized by hashing the password
                 // and salt.
-                algo.Initialize();
-                hashBytes = algo.ComputeHash(passwordAndSaltBytes);
+                hashAlgorithm.Initialize();
+                hashBytes = hashAlgorithm.ComputeHash(passwordAndSaltBytes);
 
                 // Performs key stretching over the specified number
                 // of hash iterations.
@@ -72,11 +72,11 @@ namespace Ensues.Security.Cryptography {
                     // computing another hash of the previous hash
                     // and the entered password.
                     hashBytes = hashBytes.Concat(passwordAndSaltBytes).ToArray();
-                    hashBytes = algo.ComputeHash(hashBytes);
+                    hashBytes = hashAlgorithm.ComputeHash(hashBytes);
                 }
 
                 // The hashing algorithm isn't needed anymore.
-                algo.Clear();
+                hashAlgorithm.Clear();
             }
 
             // Creates a single byte array of all the data
@@ -104,17 +104,15 @@ namespace Ensues.Security.Cryptography {
         private ConstantTimeComparer _ConstantTimeComparer;
 
         /// <summary>
-        /// Creates a new instance of <see cref="T:HashAlgorithm"/> for the specified <paramref name="hashFunction"/>.
+        /// Creates a new instance of <see cref="T:HashAlgorithm"/> for the specified <see cref="PasswordAlgorithm.HashFunction"/>.
         /// </summary>
-        /// <param name="hashFunction">
-        /// A value that defines the type of <see cref="T:HashAlgorithm"/> that is created.
-        /// </param>
         /// <returns>
-        /// A new instance of <see cref="T:HashAlgorithm"/> for the specified <paramref name="hashFunction"/>.
+        /// A new instance of <see cref="T:HashAlgorithm"/> for the specified <see cref="PasswordAlgorithm.HashFunction"/>.
         /// </returns>
-        protected virtual HashAlgorithm CreateHashAlgorithm(HashFunction hashFunction) {
+        protected virtual HashAlgorithm CreateHashAlgorithm() {
 
-            switch (hashFunction) {
+            var hf = HashFunction;
+            switch (hf) {
 
                 case HashFunction.SHA256:
                     return SHA256.Create();
@@ -126,8 +124,9 @@ namespace Ensues.Security.Cryptography {
                     return SHA512.Create();
 
                 default:
-                    var msg = string.Format("The {0} value {1} has not been implemented.", typeof(HashFunction), hashFunction);
-                    throw new NotImplementedException(msg);
+                    throw new NotImplementedException(
+                        string.Format("The {0} value {1} has not been implemented.", typeof(HashFunction), hf)    
+                    );
             }
         }
 
