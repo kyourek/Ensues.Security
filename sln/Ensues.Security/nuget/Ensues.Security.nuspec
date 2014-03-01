@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Ensues.Security</id>
+    <version>0.1.1</version>
+    <title>Ensues.Security</title>
+    <authors>Ken Yourek</authors>
+    <owners>ken</owners>
+    <licenseUrl>https://raw.github.com/kyourek/Ensues.Security/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/kyourek/Ensues.Security</projectUrl>
+    <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>
+      Cryptographic password hash algorithm
+    </summary>
+    <description>
+      Ensues.Security provides a password algorithm that stores information about how the password was hashed in the encoded hash itself. No additional information is needed to compare a plain-text password to its computation.
+      
+      Storing this information in the same string as the password hash allows changing the salt size, hash function, and number of key-stretching iterations without breaking legacy passwords or requiring a database.
+    </description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright Ken Yourek 2014</copyright>
+    <tags>Security Password Cryptography Encryption Hash</tags>
+  </metadata>
+</package>
