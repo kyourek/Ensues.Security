@@ -219,7 +219,7 @@ namespace Ensues.Security.Cryptography {
         }
 
         /// <summary>
-        /// Compares the user-entered <paramref name="password"/> to the
+        /// Compares the plain-text <paramref name="password"/> to the
         /// <paramref name="computedResult"/> that was computed using
         /// an instance of this <see cref="T:PasswordAlgorithm"/>.
         /// </summary>
