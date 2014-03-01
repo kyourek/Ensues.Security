@@ -9,6 +9,10 @@ Ensues.Security
 
 **Ensues.Security** uses [NUnit][1] for unit tests.
 
+[NuGet][2]
+===================
+    Install-Package Ensues.Security
+
 Usage
 ===================
 
@@ -30,3 +34,4 @@ Usage
                                                                 // iterations are stored in computedResult_1.
 
   [1]: http://www.nunit.org/ "NUnit"
+  [2]: https://www.nuget.org/packages/Ensues.Security/ "NuGet"
