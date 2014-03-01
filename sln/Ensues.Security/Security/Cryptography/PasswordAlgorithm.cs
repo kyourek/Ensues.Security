@@ -5,6 +5,11 @@ using System.Text;
 
 namespace Ensues.Security.Cryptography {
 
+    /// <summary>
+    /// A class that can create a computation for a plain-text password
+    /// that includes a cryptographic hash of that password and other
+    /// information required to create that hash.
+    /// </summary>
     public class PasswordAlgorithm {
 
         /// <summary>
@@ -143,7 +148,7 @@ namespace Ensues.Security.Cryptography {
         /// <summary>
         /// Gets or sets a value that indicates whether or not a
         /// constant-time comparison is used when comparing a password
-        /// to its computed result. The default value is <c>true</c>.
+        /// to its computed result.
         /// </summary>
         public bool CompareInConstantTime {
             get { return _CompareInConstantTime; }
@@ -153,7 +158,7 @@ namespace Ensues.Security.Cryptography {
 
         /// <summary>
         /// Gets or sets the <see cref="T:HashFunction"/> used while
-        /// hashing new passwords. The default value is <see cref="HashFunction.SHA256"/>.
+        /// hashing new passwords.
         /// </summary>
         public HashFunction HashFunction {
             get { return _HashFunction; }
@@ -163,7 +168,7 @@ namespace Ensues.Security.Cryptography {
 
         /// <summary>
         /// Gets or sets the length, in bytes, of salts created
-        /// for new passwords. The default value is <c>16</c>.
+        /// for new passwords.
         /// </summary>
         public Int16 SaltLength {
             get { return _SaltLength; }
@@ -176,8 +181,7 @@ namespace Ensues.Security.Cryptography {
 
         /// <summary>
         /// Gets or sets the number of key-stretching iterations
-        /// to perform while hashing new passwords. The default
-        /// value is <c>1000</c>.
+        /// to perform while hashing new passwords.
         /// </summary>
         public Int32 HashIterations {
             get { return _HashIterations; }
@@ -223,12 +227,12 @@ namespace Ensues.Security.Cryptography {
         /// The plain-text, user-entered string.
         /// </param>
         /// <param name="computedResult">
-        /// The result of a previous call to <see cref="PasswordAlgorithm.Compute"/>
+        /// The result of a previous call to <see cref="PasswordAlgorithm.Compute(string)"/>
         /// using <paramref name="password"/> as the parameter.
         /// </param>
         /// <returns>
         /// <c>true</c> if the <paramref name="password"/> is the same as the
-        /// parameter to <see cref="PasswordAlgorithm.Compute"/> that returned
+        /// parameter to <see cref="PasswordAlgorithm.Compute(string)"/> that returned
         /// the <paramref name="computedResult"/>. Otherwise, <c>false</c>.
         /// </returns>
         public virtual bool Compare(string password, string computedResult) {
