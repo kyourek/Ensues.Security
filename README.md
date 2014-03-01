@@ -9,6 +9,10 @@ Ensues.Security
 
 **Ensues.Security** uses [NUnit][1] for unit tests.
 
+NuGet
+===================
+    Install-Package Ensues.Security
+
 Usage
 ===================
 
