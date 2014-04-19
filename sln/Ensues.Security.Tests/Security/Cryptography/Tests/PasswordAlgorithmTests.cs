@@ -238,6 +238,48 @@ namespace Ensues.Security.Cryptography.Tests {
         }
 
         [Test]
+        public void Compute_NullThrowsException() {            
+            var ex = default(Exception);
+            var pa = new PasswordAlgorithm();
+            
+            try {
+                pa.Compute(null);
+            }
+            catch (Exception e) {
+                ex = e;
+            }
+
+            Assert.IsNotNull(ex);
+        }
+
+        [Test]
+        public void Compare_NullPasswordThrowsException() {
+            var pa = new PasswordAlgorithm();
+            var ex1 = default(Exception);
+            try { pa.Compare(null, "computedResult"); }
+            catch (Exception ex) { ex1 = ex; }
+            Assert.IsNotNull(ex1);
+        }
+
+        [Test]
+        public void Compare_NullComputedResultThrowsException() {
+            var pa = new PasswordAlgorithm();
+            var ex1 = default(Exception);
+            try { pa.Compare("password", null); }
+            catch (Exception ex) { ex1 = ex; }
+            Assert.IsNotNull(ex1);
+        }
+
+        [Test]
+        public void Compare_NullParametersThrowsException() {
+            var pa = new PasswordAlgorithm();
+            var ex1 = default(Exception);
+            try { pa.Compare(null, null); }
+            catch (Exception ex) { ex1 = ex; }
+            Assert.IsNotNull(ex1);
+        }
+
+        [Test]
         public void Compare_DoesNotUseConstantTimeComparer() {
             var retv = default(bool);
             var xstr = default(string);
