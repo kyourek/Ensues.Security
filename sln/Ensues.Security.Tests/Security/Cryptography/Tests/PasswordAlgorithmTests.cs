@@ -253,12 +253,43 @@ namespace Ensues.Security.Cryptography.Tests {
         }
 
         [Test]
+        public void Compute_EmptyStringDoesNotThrowException() {
+            var ex = default(Exception);
+            var pa = new PasswordAlgorithm();
+            try { pa.Compute(string.Empty); }
+            catch (Exception e) { ex = e; }
+            Assert.IsNull(ex);
+        }
+
+        [Test]
         public void Compare_NullPasswordThrowsException() {
             var pa = new PasswordAlgorithm();
+            var cr = pa.Compute("computed result");
+
             var ex1 = default(Exception);
-            try { pa.Compare(null, "computedResult"); }
+            try { pa.Compare(null, cr); }
             catch (Exception ex) { ex1 = ex; }
             Assert.IsNotNull(ex1);
+        }
+
+        [Test]
+        public void Compare_EmptyPasswordDoesNotThrowException() {
+            var pa = new PasswordAlgorithm();
+            var cr = pa.Compute("password");
+
+            var ex1 = default(Exception);
+            try { pa.Compare(string.Empty, cr); }
+            catch (Exception ex) { ex1 = ex; }
+            Assert.IsNull(ex1);
+        }
+
+        [Test]
+        public void Compare_ComputedResultThatWasNotComputedThrowsException() {
+            var pa = new PasswordAlgorithm();
+            var ex = default(Exception);
+            try { pa.Compare("plain text", "not computed"); }
+            catch (Exception e) { ex = e; }
+            Assert.IsNotNull(ex);
         }
 
         [Test]
