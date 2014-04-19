@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
+using Ensues.Configuration;
 namespace Ensues.Security.Cryptography {
 
     /// <summary>
@@ -11,6 +12,11 @@ namespace Ensues.Security.Cryptography {
     /// information required to create that hash.
     /// </summary>
     public class PasswordAlgorithm {
+
+        internal const bool CompareInConstantTimeDefault = true;
+        internal const Int16 SaltLengthDefault = 16;
+        internal const Int32 HashIterationsDefault = 1000;
+        internal const HashFunction HashFunctionDefault = HashFunction.SHA256;
 
         /// <summary>
         /// This is the encoding used to convert a plain-text password
@@ -154,7 +160,7 @@ namespace Ensues.Security.Cryptography {
             get { return _CompareInConstantTime; }
             set { _CompareInConstantTime = value; }
         }
-        private bool _CompareInConstantTime = true;
+        private bool _CompareInConstantTime = CompareInConstantTimeDefault;
 
         /// <summary>
         /// Gets or sets the <see cref="T:HashFunction"/> used while
@@ -164,7 +170,7 @@ namespace Ensues.Security.Cryptography {
             get { return _HashFunction; }
             set { _HashFunction = value; }
         }
-        private HashFunction _HashFunction = HashFunction.SHA256;
+        private HashFunction _HashFunction = HashFunctionDefault;
 
         /// <summary>
         /// Gets or sets the length, in bytes, of salts created
@@ -177,7 +183,7 @@ namespace Ensues.Security.Cryptography {
                 _SaltLength = value;
             }
         }
-        private Int16 _SaltLength = 16;
+        private Int16 _SaltLength = SaltLengthDefault;
 
         /// <summary>
         /// Gets or sets the number of key-stretching iterations
@@ -190,7 +196,24 @@ namespace Ensues.Security.Cryptography {
                 _HashIterations = value;
             }
         }
-        private Int32 _HashIterations = 1000;
+        private Int32 _HashIterations = HashIterationsDefault;
+
+        /// <summary>
+        /// Creates a new instance of <see cref="T:PasswordAlgorithm"/>.
+        /// </summary>
+        public PasswordAlgorithm() {
+            var configuration = SecurityConfiguration
+                .Default
+                .PasswordAlgorithmConfiguration;
+
+            if (configuration != null) {
+
+                SaltLength = configuration.SaltLength;
+                HashFunction = configuration.HashFunction;
+                HashIterations = configuration.HashIterations;
+                CompareInConstantTime = configuration.CompareInConstantTime;
+            }
+        }
 
         /// <summary>
         /// Creates a string that can later be used in <see cref="PasswordAlgorithm.Compare"/>

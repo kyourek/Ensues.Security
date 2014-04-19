@@ -3,7 +3,7 @@ using System.Configuration;
 
 namespace Ensues.Configuration {
     
-    internal class ConfigurationSection : System.Configuration.ConfigurationSection {
+    internal class SecuritySection : ConfigurationSection {
 
         [ConfigurationProperty("passwordAlgorithm", IsRequired = false, DefaultValue = null)]
         public PasswordAlgorithmElement PasswordAlgorithm {
