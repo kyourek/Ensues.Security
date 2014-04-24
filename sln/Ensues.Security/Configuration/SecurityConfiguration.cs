@@ -14,8 +14,11 @@ namespace Ensues.Configuration {
 
         protected internal SecurityConfiguration() { }
 
-        public static SecurityConfiguration Default { get { return _Default; } }
-        private static readonly SecurityConfiguration _Default = new SecurityConfiguration();
+        public static SecurityConfiguration Default { 
+            get { return _Default ?? (_Default = new SecurityConfiguration()); }
+            internal set { _Default = value; }
+        }
+        private static SecurityConfiguration _Default = new SecurityConfiguration();
 
         public string SectionName {
             get { return _SectionName ?? (_SectionName = "ensues.security"); }

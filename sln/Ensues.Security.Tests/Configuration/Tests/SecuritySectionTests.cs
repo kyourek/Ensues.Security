@@ -14,11 +14,13 @@ namespace Ensues.Configuration.Tests {
         [SetUp]
         public void SetUp() {
             AppConfigFile = Path.GetTempFileName();
+            SecurityConfiguration.Default = null;
         }
 
         [TearDown]
         public void TearDown() {
             File.Delete(AppConfigFile);
+            SecurityConfiguration.Default = null;
         }
 
         [Test]

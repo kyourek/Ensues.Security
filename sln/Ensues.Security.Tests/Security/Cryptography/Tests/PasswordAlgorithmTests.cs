@@ -365,34 +365,37 @@ namespace Ensues.Security.Cryptography.Tests {
             }
         }
 
-//        [Test]
-//        public void Constructor_SetsPropertiesBasedOnConfiguration() {
-//            var appConfigFile = Path.GetTempFileName();
-//            var appConfig = @"<?xml version='1.0'?>
-//                <configuration>
-//                    <configSections>
-//                        <section name='ensues.security' type='Ensues.Configuration.SecuritySection, Ensues.Security' />
-//                    </configSections>
-//                    <ensues.security>
-//                        <passwordAlgorithm hashFunction='SHA384' hashIterations='654321' compareInConstantTime='false' saltLength='432' />
-//                    </ensues.security>
-//                </configuration>
-//            ";
+        [Test]
+        public void Constructor_SetsPropertiesBasedOnConfiguration() {
+            var appConfigFile = Path.GetTempFileName();
+            var appConfig = @"<?xml version='1.0'?>
+                <configuration>
+                    <configSections>
+                        <section name='ensues.security' type='Ensues.Configuration.SecuritySection, Ensues.Security' />
+                    </configSections>
+                    <ensues.security>
+                        <passwordAlgorithm hashFunction='SHA384' hashIterations='654321' compareInConstantTime='false' saltLength='432' />
+                    </ensues.security>
+                </configuration>
+            ";
 
-//            File.WriteAllText(appConfigFile, appConfig);
+            File.WriteAllText(appConfigFile, appConfig);
 
-//            try {
-//                using (AppConfig.Change(appConfigFile)) {
-//                    var pa = new PasswordAlgorithm();
-//                    Assert.AreEqual(HashFunction.SHA384, pa.HashFunction);
-//                    Assert.AreEqual(654321, pa.HashIterations);
-//                    Assert.AreEqual(false, pa.CompareInConstantTime);
-//                    Assert.AreEqual(432, pa.SaltLength);
-//                }
-//            }
-//            finally {
-//                File.Delete(appConfigFile);
-//            }
-//        }
+            try {
+                SecurityConfiguration.Default = null;
+
+                using (AppConfig.Change(appConfigFile)) {
+                    var pa = new PasswordAlgorithm();
+                    Assert.AreEqual(HashFunction.SHA384, pa.HashFunction);
+                    Assert.AreEqual(654321, pa.HashIterations);
+                    Assert.AreEqual(false, pa.CompareInConstantTime);
+                    Assert.AreEqual(432, pa.SaltLength);
+                }
+            }
+            finally {
+                File.Delete(appConfigFile);
+                SecurityConfiguration.Default = null;
+            }
+        }
     }
 }
