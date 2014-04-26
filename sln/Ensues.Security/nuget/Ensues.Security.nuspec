@@ -18,7 +18,9 @@
       
       Storing this information in the same string as the password hash allows changing the salt size, hash function, and number of key-stretching iterations without breaking legacy passwords or requiring a database.
     </description>
-    <releaseNotes></releaseNotes>
+    <releaseNotes>
+      Version 1.0 provides configuration of the password algorithm via an App.config or Web.config file.
+    </releaseNotes>
     <copyright>Copyright Ken Yourek 2014</copyright>
     <tags>Security Password Cryptography Encryption Hash</tags>
   </metadata>
