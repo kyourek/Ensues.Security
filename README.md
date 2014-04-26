@@ -19,19 +19,19 @@ Usage
     var pa = new PasswordAlgorithm();
 
     var computedResult_1 = pa.Compute("my password");
-    pa.Compare("my password", computedResult_1);                // Returns true.
+    pa.Compare("my password", computedResult_1);            // Returns true.
 
     pa.SaltLength = 64;
     pa.HashFunction = HashFunction.SHA512;
     pa.HashIterations = 10000;
 
-    var computedResult_2 = pa.Compute("another password");      // Creates an encoded password hash using a
-                                                                // longer salt, a stronger hash function, and
-                                                                // more key-stretching iterations than before.
+    var computedResult_2 = pa.Compute("another password");  // Creates an encoded password hash using a
+                                                            // longer salt, a stronger hash function, and
+                                                            // more key-stretching iterations than before.
 
-    pa.Compare("my password", computedResult_1);                // Still returns true, because the previous
-                                                                // salt length, hash function, and key-stretching
-                                                                // iterations are stored in computedResult_1.
+    pa.Compare("my password", computedResult_1);            // Still returns true, because the previous
+                                                            // salt length, hash function, and key-stretching
+                                                            // iterations are stored in computedResult_1.
 
   [1]: http://www.nunit.org/ "NUnit"
   [2]: https://www.nuget.org/packages/Ensues.Security/ "NuGet"
