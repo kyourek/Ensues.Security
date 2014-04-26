@@ -16,6 +16,6 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion("1.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.8")]
-[assembly: AssemblyInformationalVersion("1.0.0")]
+[assembly: AssemblyInformationalVersion("1.0.0-alpha")]
 
 [assembly: InternalsVisibleTo("Ensues.Security.Tests")]
