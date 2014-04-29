@@ -87,6 +87,21 @@ namespace Ensues.Security.Cryptography.Tests {
         }
 
         [Test]
+        public void Compare_WorksForLongPasswords() {
+            var password = Enumerable
+                .Range(0, 100)
+                .Select(_ => "abcdefghijklmnopqrstuvwxyz0123456789")
+                .Aggregate((s1, s2) => s1 + s2 + "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+
+           var algo = new PasswordAlgorithm();
+            var computed = algo.Compute(password);
+            Assert.IsTrue(algo.Compare(password, computed));
+
+            var incorrectPassword = password.Remove(0, 1);
+            Assert.IsFalse(algo.Compare(incorrectPassword, computed));
+        }
+
+        [Test]
         public void CompareInConstantTime_IsInitiallyTrue() {
             Assert.IsTrue(new PasswordAlgorithm().CompareInConstantTime);
         }
