@@ -8,7 +8,7 @@ namespace Ensues.Security.Cryptography {
     /// An equality comparer that compares strings in constant time.
     /// </summary>
     internal class ConstantTimeComparer : IEqualityComparer<string> {
-
+        
         /// <summary>
         /// Helper method to extend <paramref name="s"/> by <paramref name="count"/> characters.
         /// </summary>
@@ -31,7 +31,7 @@ namespace Ensues.Security.Cryptography {
         /// Boolean <c>true</c> if <paramref name="x"/> equals <paramref name="y"/>.
         /// Otherwise, <c>false</c>.
         /// </returns>
-        public virtual bool Equals(string x, string y) {
+        public bool Equals(string x, string y) {
 
             // Ensures that both variables are actual
             // instances of strings.
@@ -77,8 +77,8 @@ namespace Ensues.Security.Cryptography {
                 : s1len == s2len && diff == 0;
         }
 
-        public virtual int GetHashCode(string obj) {
-            throw new NotImplementedException();
+        public int GetHashCode(string obj) {
+            throw new NotSupportedException();
         }
     }
 }

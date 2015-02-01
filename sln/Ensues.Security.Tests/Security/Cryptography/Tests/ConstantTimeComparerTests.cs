@@ -4,10 +4,8 @@ using System.Linq;
 using NUnit.Framework;
 
 namespace Ensues.Security.Cryptography.Tests {
-    
     [TestFixture]
     public class ConstantTimeComparerTests {
-
         [Test]
         public void Equals_ReturnsTrueForEqualStrings() {
             var c = new ConstantTimeComparer();
@@ -28,7 +26,6 @@ namespace Ensues.Security.Cryptography.Tests {
         public void Equals_ExtendedStringsAreNotEqual() {
             var s1 = "s";
             var s2 = "s____";
-
             var c = new ConstantTimeComparer();
             Assert.IsFalse(c.Equals(s1, s2));
         }

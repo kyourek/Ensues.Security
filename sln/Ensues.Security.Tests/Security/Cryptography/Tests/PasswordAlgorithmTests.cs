@@ -1,22 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 using NUnit.Framework;
 
 using Ensues.Configuration;
 namespace Ensues.Security.Cryptography.Tests {
-    
     [TestFixture]
     public class PasswordAlgorithmTests {
-
-        private class ConstantTimeComparerMock : ConstantTimeComparer {
-
-            public Func<string, string, bool> OnEquals { get; set; }
-
-            public override bool Equals(string x, string y) {
-                return OnEquals(x, y);
+        private class MockConstantTimeComparer : IEqualityComparer<string> {
+            public Func<string, string, bool> EqualsProxy { get; set; }
+            public bool Equals(string x, string y) {
+                var p = EqualsProxy;
+                if (p != null) return p(x, y);
+                return default(bool);
+            }
+            public int GetHashCode(string obj) {
+                throw new NotImplementedException();
             }
         }
 
@@ -37,37 +38,27 @@ namespace Ensues.Security.Cryptography.Tests {
 
         [Test]
         public void Compare_ReturnsTrueForEqualPasswords() {
-
             var password = "A weak password!";
-
             var algo = new PasswordAlgorithm();
             var computed = algo.Compute(password);
-
             Assert.AreNotEqual(password, computed);
             Assert.IsTrue(algo.Compare(password, computed));
         }
 
         [Test]
         public void Compare_WorksAfterHashIterationsIsChanged() {
-
             var password = "not much better";
-
             var algo = new PasswordAlgorithm();
             var computed = algo.Compute(password);
-
             algo.HashIterations = 999999;
-
             Assert.IsTrue(algo.Compare(password, computed));
         }
 
         [Test]
         public void Compare_WorksAfterSaltLengthIsChanged() {
-
             var password = "This 1 is a stronger passw0rd.";
-
             var algo = new PasswordAlgorithm { SaltLength = 8 };
             var computed = algo.Compute(password);
-
             algo.SaltLength = 88;
             Assert.IsTrue(algo.Compare(password, computed));
         }
@@ -92,11 +83,9 @@ namespace Ensues.Security.Cryptography.Tests {
                 .Range(0, 100)
                 .Select(_ => "abcdefghijklmnopqrstuvwxyz0123456789")
                 .Aggregate((s1, s2) => s1 + s2 + "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-
            var algo = new PasswordAlgorithm();
             var computed = algo.Compute(password);
             Assert.IsTrue(algo.Compare(password, computed));
-
             var incorrectPassword = password.Remove(0, 1);
             Assert.IsFalse(algo.Compare(incorrectPassword, computed));
         }
@@ -135,9 +124,7 @@ namespace Ensues.Security.Cryptography.Tests {
                     algo.HashFunction = hashFunction;
                     return algo.Compute("Here's the password: ");
                 });
-
             foreach (var computedResult in computedResults) {
-
                 Assert.IsTrue(algo.Compare("Here's the password: ", computedResult));
                 Assert.IsFalse(algo.Compare("here's the password: ", computedResult));
                 Assert.IsFalse(algo.Compare("Here's the password:", computedResult));
@@ -166,13 +153,11 @@ namespace Ensues.Security.Cryptography.Tests {
         public void HashIterations_ChangesComputedResult() {
             var algo = new PasswordAlgorithm();
             var password = "password";
-
             var results = Enumerable.Range(0, 10).Select(i => {
                 algo.HashIterations = i;
                 return algo.Compute(password);
             })
             .ToList();
-
             Assert.AreEqual(results.Count(), results.Distinct().Count());
         }
 
@@ -180,10 +165,8 @@ namespace Ensues.Security.Cryptography.Tests {
         public void Compute_ComputesDifferentResultsForSamePassword() {
             var algo = new PasswordAlgorithm();
             var password = "asdfjkl;";
-
             var result1 = algo.Compute(password);
             var result2 = algo.Compute(password);
-
             Assert.AreNotEqual(result1, result2);
         }
 
@@ -191,17 +174,14 @@ namespace Ensues.Security.Cryptography.Tests {
         public void SaltLength_0Works() {
             var algo = new PasswordAlgorithm();
             var password = "1234";
-
             algo.SaltLength = 0;
             var computedResult = algo.Compute(password);
-
             Assert.IsTrue(algo.Compare(password, computedResult));
         }
 
         [Test]
         public void SaltLength_ThrowsExceptionIfLessThan0() {
             var algo = new PasswordAlgorithm();
-
             try {
                 algo.SaltLength = -1;
                 Assert.Fail();
@@ -214,7 +194,6 @@ namespace Ensues.Security.Cryptography.Tests {
         [Test]
         public void HashIterations_ThrowsExceptionIfLessThan0() {
             var algo = new PasswordAlgorithm();
-
             try {
                 algo.HashIterations = -1;
                 Assert.Fail();
@@ -235,19 +214,16 @@ namespace Ensues.Security.Cryptography.Tests {
                 return retv;
             });
 
-            var mock = new ConstantTimeComparerMock { OnEquals = func };
+            var mock = new MockConstantTimeComparer { EqualsProxy = func };
             var algo = new PasswordAlgorithm { 
                 ConstantTimeComparer = mock,
                 CompareInConstantTime = true
             };
 
             foreach (var v in new[] { true, false }) {
-
                 retv = v;
-
                 var password = "password " + retv;
                 var computed = algo.Compute(password);
-
                 Assert.AreEqual(retv, algo.Compare(password, computed));
                 Assert.AreEqual(computed, xstr);
                 Assert.AreEqual(computed, ystr);
@@ -257,15 +233,13 @@ namespace Ensues.Security.Cryptography.Tests {
         [Test]
         public void Compute_NullThrowsException() {            
             var ex = default(Exception);
-            var pa = new PasswordAlgorithm();
-            
+            var pa = new PasswordAlgorithm();            
             try {
                 pa.Compute(null);
             }
             catch (Exception e) {
                 ex = e;
             }
-
             Assert.IsNotNull(ex);
         }
 
@@ -282,10 +256,13 @@ namespace Ensues.Security.Cryptography.Tests {
         public void Compare_NullPasswordThrowsException() {
             var pa = new PasswordAlgorithm();
             var cr = pa.Compute("computed result");
-
             var ex1 = default(Exception);
-            try { pa.Compare(null, cr); }
-            catch (Exception ex) { ex1 = ex; }
+            try { 
+                pa.Compare(null, cr); 
+            }
+            catch (Exception ex) { 
+                ex1 = ex; 
+            }
             Assert.IsNotNull(ex1);
         }
 
@@ -293,10 +270,13 @@ namespace Ensues.Security.Cryptography.Tests {
         public void Compare_EmptyPasswordDoesNotThrowException() {
             var pa = new PasswordAlgorithm();
             var cr = pa.Compute("password");
-
             var ex1 = default(Exception);
-            try { pa.Compare(string.Empty, cr); }
-            catch (Exception ex) { ex1 = ex; }
+            try { 
+                pa.Compare(string.Empty, cr); 
+            }
+            catch (Exception ex) { 
+                ex1 = ex; 
+            }
             Assert.IsNull(ex1);
         }
 
@@ -304,8 +284,12 @@ namespace Ensues.Security.Cryptography.Tests {
         public void Compare_ComputedResultThatWasNotComputedThrowsException() {
             var pa = new PasswordAlgorithm();
             var ex = default(Exception);
-            try { pa.Compare("plain text", "not computed"); }
-            catch (Exception e) { ex = e; }
+            try { 
+                pa.Compare("plain text", "not computed"); 
+            }
+            catch (Exception e) { 
+                ex = e; 
+            }
             Assert.IsNotNull(ex);
         }
 
@@ -313,8 +297,12 @@ namespace Ensues.Security.Cryptography.Tests {
         public void Compare_NullComputedResultThrowsException() {
             var pa = new PasswordAlgorithm();
             var ex1 = default(Exception);
-            try { pa.Compare("password", null); }
-            catch (Exception ex) { ex1 = ex; }
+            try { 
+                pa.Compare("password", null); 
+            }
+            catch (Exception ex) { 
+                ex1 = ex; 
+            }
             Assert.IsNotNull(ex1);
         }
 
@@ -322,8 +310,12 @@ namespace Ensues.Security.Cryptography.Tests {
         public void Compare_NullParametersThrowsException() {
             var pa = new PasswordAlgorithm();
             var ex1 = default(Exception);
-            try { pa.Compare(null, null); }
-            catch (Exception ex) { ex1 = ex; }
+            try { 
+                pa.Compare(null, null); 
+            }
+            catch (Exception ex) { 
+                ex1 = ex; 
+            }
             Assert.IsNotNull(ex1);
         }
 
@@ -338,19 +330,16 @@ namespace Ensues.Security.Cryptography.Tests {
                 return retv;
             });
 
-            var mock = new ConstantTimeComparerMock { OnEquals = func };
+            var mock = new MockConstantTimeComparer { EqualsProxy = func };
             var algo = new PasswordAlgorithm {
                 ConstantTimeComparer = mock,
                 CompareInConstantTime = false
             };
-
             var password = "pass";
             var computed = algo.Compute(password);
 
             retv = false;
-
             Assert.IsTrue(algo.Compare(password, computed));
-
             Assert.IsNull(xstr);
             Assert.IsNull(ystr);
         }

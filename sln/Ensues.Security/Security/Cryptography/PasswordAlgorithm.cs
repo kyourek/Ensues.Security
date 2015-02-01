@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,7 +13,6 @@ namespace Ensues.Security.Cryptography {
     /// information required to create that hash.
     /// </summary>
     public class PasswordAlgorithm {
-
         internal const bool CompareInConstantTimeDefault = true;
         internal const Int16 SaltLengthDefault = 16;
         internal const Int32 HashIterationsDefault = 1000;
@@ -35,6 +35,27 @@ namespace Ensues.Security.Cryptography {
         private static readonly int Int32ByteLength = BitConverter.GetBytes(default(Int32)).Length;
 
         /// <summary>
+        /// Creates a new instance of <see cref="T:HashAlgorithm"/> for the specified <paramref name="hashFunction" />.
+        /// </summary>
+        /// <param name="hashFunction">
+        /// The type of hash algorithm to create.
+        /// </param>
+        /// <returns>
+        /// A new instance of <see cref="T:HashAlgorithm"/> for the specified <paramref name="hashFunction" />.
+        /// </returns>
+        private static HashAlgorithm CreateHashAlgorithm(HashFunction hashFunction) {
+            switch (hashFunction) {
+                case HashFunction.SHA256: return SHA256.Create();
+                case HashFunction.SHA384: return SHA384.Create();
+                case HashFunction.SHA512: return SHA512.Create();
+                default: throw new ArgumentException(
+                    string.Format("The {0} value {1} has not been implemented.", typeof(HashFunction), hashFunction),
+                    "hashFunction"
+                );
+            }
+        }
+
+        /// <summary>
         /// Creates a hash of the <paramref name="password"/> using the specified parameters.
         /// </summary>
         /// <param name="password">The string for which the hash is created.</param>
@@ -44,7 +65,7 @@ namespace Ensues.Security.Cryptography {
         /// <returns>
         /// The created hash of the <paramref name="password"/>.
         /// </returns>
-        private string Compute(string password, HashFunction hashFunction, Int32 hashIterations, byte[] saltBytes) {
+        private static string Compute(string password, HashFunction hashFunction, Int32 hashIterations, byte[] saltBytes) {
             if (null == saltBytes) throw new ArgumentNullException("saltBytes");
 
             // Gets the length of the salt as a byte array
@@ -68,7 +89,7 @@ namespace Ensues.Security.Cryptography {
             // Creates the hash algorithm that is used to generate
             // the password hash.
             var hashBytes = default(byte[]);
-            using (var hashAlgorithm = CreateHashAlgorithm()) {
+            using (var hashAlgorithm = CreateHashAlgorithm(hashFunction)) {
 
                 // The hash is initialized by hashing the password
                 // and salt.
@@ -108,38 +129,11 @@ namespace Ensues.Security.Cryptography {
         /// <summary>
         /// Gets or sets the object used to compare strings in constant time.
         /// </summary>
-        internal ConstantTimeComparer ConstantTimeComparer {
+        internal IEqualityComparer<string> ConstantTimeComparer {
             get { return _ConstantTimeComparer ?? (_ConstantTimeComparer = new ConstantTimeComparer()); }
             set { _ConstantTimeComparer = value; }
         }
-        private ConstantTimeComparer _ConstantTimeComparer;
-
-        /// <summary>
-        /// Creates a new instance of <see cref="T:HashAlgorithm"/> for the specified <see cref="PasswordAlgorithm.HashFunction"/>.
-        /// </summary>
-        /// <returns>
-        /// A new instance of <see cref="T:HashAlgorithm"/> for the specified <see cref="PasswordAlgorithm.HashFunction"/>.
-        /// </returns>
-        protected virtual HashAlgorithm CreateHashAlgorithm() {
-
-            var hf = HashFunction;
-            switch (hf) {
-
-                case HashFunction.SHA256:
-                    return SHA256.Create();
-
-                case HashFunction.SHA384:
-                    return SHA384.Create();
-
-                case HashFunction.SHA512:
-                    return SHA512.Create();
-
-                default:
-                    throw new NotImplementedException(
-                        string.Format("The {0} value {1} has not been implemented.", typeof(HashFunction), hf)    
-                    );
-            }
-        }
+        private IEqualityComparer<string> _ConstantTimeComparer;
 
         /// <summary>
         /// Creates a new instance of <see cref="T:RandomNumberGenerator"/>.
@@ -205,9 +199,7 @@ namespace Ensues.Security.Cryptography {
             var configuration = SecurityConfiguration
                 .Default
                 .PasswordAlgorithmConfiguration;
-
             if (configuration != null) {
-
                 SaltLength = configuration.SaltLength;
                 HashFunction = configuration.HashFunction;
                 HashIterations = configuration.HashIterations;
@@ -227,7 +219,6 @@ namespace Ensues.Security.Cryptography {
         /// to determine password validity.
         /// </returns>
         public virtual string Compute(string password) {
-
             // First, generate a salt using a random number generator.
             var salt = new byte[SaltLength];
             using (var randomNumberGenerator = CreateRandomNumberGenerator()) {
