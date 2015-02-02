@@ -8,7 +8,6 @@ namespace Ensues.Configuration {
     
     [TestFixture]
     public class SecuritySectionTests {
-
         private string AppConfigFile;
 
         [SetUp]
@@ -25,7 +24,6 @@ namespace Ensues.Configuration {
 
         [Test]
         public void PasswordAlgorithmConfiguration_ValuesSetFromAppConfig() {
-
             var appConfig = @"<?xml version='1.0'?>
                 <configuration>
                     <configSections>
@@ -36,11 +34,8 @@ namespace Ensues.Configuration {
                     </ensues.security>
                 </configuration>
             ";
-
             File.WriteAllText(AppConfigFile, appConfig);
-
             using (AlternateAppConfig.Change(AppConfigFile)) {
-
                 var securityConfiguration = new SecurityConfiguration();
                 var passwordAlgorithmConfiguration = securityConfiguration.PasswordAlgorithmConfiguration;
                 Assert.AreEqual(HashFunction.SHA384, passwordAlgorithmConfiguration.HashFunction);
@@ -52,7 +47,6 @@ namespace Ensues.Configuration {
 
         [Test]
         public void PasswordAlgorithmConfiguration_UsesDefaultsIfNotProvided() {
-
             var appConfig = @"<?xml version='1.0'?>
                 <configuration>
                     <configSections>
@@ -63,11 +57,8 @@ namespace Ensues.Configuration {
                     </ensues.security>
                 </configuration>
             ";
-
             File.WriteAllText(AppConfigFile, appConfig);
-
             using (AlternateAppConfig.Change(AppConfigFile)) {
-
                 var securityConfiguration = new SecurityConfiguration();
                 var passwordAlgorithmConfiguration = securityConfiguration.PasswordAlgorithmConfiguration;
                 Assert.AreEqual(PasswordAlgorithm.HashFunctionDefault, passwordAlgorithmConfiguration.HashFunction);

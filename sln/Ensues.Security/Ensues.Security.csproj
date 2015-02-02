@@ -36,6 +36,7 @@
     <Compile Include="Security\Cryptography\ConstantTimeComparer.cs" />
     <Compile Include="Security\Cryptography\HashFunction.cs" />
     <Compile Include="Security\Cryptography\PasswordAlgorithm.cs" />
+    <Compile Include="Security\Cryptography\PasswordGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="nuget\Ensues.Security.nuspec">

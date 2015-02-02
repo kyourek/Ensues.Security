@@ -4,9 +4,7 @@ using System.Linq;
 using System.Reflection;
 
 namespace Ensues.Configuration {
-
     internal abstract class AlternateAppConfig : IDisposable {
-
         public static AlternateAppConfig Change(string path) {
             return new ChangeAppConfig(path);
         }
@@ -14,9 +12,7 @@ namespace Ensues.Configuration {
         public abstract void Dispose();
 
         private class ChangeAppConfig : AlternateAppConfig {
-
             private readonly string OldConfig = AppDomain.CurrentDomain.GetData("APP_CONFIG_FILE").ToString();
-
             private bool DisposedValue;
 
             public ChangeAppConfig(string path) {
@@ -28,7 +24,6 @@ namespace Ensues.Configuration {
                 if (!DisposedValue) {
                     AppDomain.CurrentDomain.SetData("APP_CONFIG_FILE", OldConfig);
                     ResetConfigMechanism();
-
                     DisposedValue = true;
                 }
                 GC.SuppressFinalize(this);

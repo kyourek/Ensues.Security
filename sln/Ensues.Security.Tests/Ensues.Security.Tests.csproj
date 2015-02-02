@@ -50,6 +50,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\Cryptography\ConstantTimeComparerTests.cs" />
     <Compile Include="Security\Cryptography\PasswordAlgorithmTests.cs" />
+    <Compile Include="Security\Cryptography\PasswordGeneratorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ensues.Security\Ensues.Security.csproj">
