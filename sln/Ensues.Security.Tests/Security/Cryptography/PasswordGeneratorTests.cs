@@ -134,8 +134,8 @@ namespace Ensues.Security.Cryptography {
         [Test]
         public void Generate_GeneratesRandomPassword() {
             var gen = new PasswordGenerator();
-            var passwords = Enumerable.Range(0, 10).Select(_ => gen.Generate()).ToList();
-            Assert.AreEqual(10, passwords.Distinct().Count());
+            var passwords = Enumerable.Range(0, 1000).Select(_ => gen.Generate()).ToList();
+            Assert.AreEqual(1000, passwords.Distinct().Count());
         }
 
         [Test]
