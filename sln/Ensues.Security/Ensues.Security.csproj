@@ -39,6 +39,11 @@
     <Compile Include="Security\Cryptography\PasswordGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="npcknpsh\build.py" />
+    <None Include="npcknpsh\buildconfig.py" />
+    <None Include="npcknpsh\project.py" />
+    <None Include="npcknpsh\projectconfig.py" />
+    <None Include="npcknpsh\__init__.py" />
     <None Include="nuget\Ensues.Security.nuspec">
       <SubType>Designer</SubType>
     </None>

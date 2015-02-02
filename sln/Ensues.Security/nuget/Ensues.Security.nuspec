@@ -19,9 +19,11 @@
       Storing this information in the same string as the password hash allows changing the salt size, hash function, and number of key-stretching iterations without breaking legacy passwords or requiring a database.
     </description>
     <releaseNotes>
-      Version 1.0 enables configuration of the password algorithm via an App.config or Web.config file.
+      Version 2.0 includes a cryptographically secure random password generator.
+      Also, the password algorithm will return false when comparing null arguments
+      instead of throwing an exception.
     </releaseNotes>
-    <copyright>Copyright Ken Yourek 2014</copyright>
+    <copyright>Copyright Ken Yourek 2014-2015</copyright>
     <tags>Security Password Cryptography Encryption Hash</tags>
   </metadata>
 </package>
