@@ -23,6 +23,12 @@ namespace Ensues.Security.Cryptography {
         }
 
         /// <summary>
+        /// Get the default instance of this comparer class.
+        /// </summary>
+        public static ConstantTimeComparer Default { get { return _Default; } }
+        private static readonly ConstantTimeComparer _Default = new ConstantTimeComparer();
+
+        /// <summary>
         /// Determines if <paramref name="x"/> equals <paramref name="y"/>.
         /// </summary>
         /// <param name="x">The left string in the equality check.</param>
@@ -62,8 +68,10 @@ namespace Ensues.Security.Cryptography {
             var diff = (uint)0;
             var slen = s1.Length;
             for (var i = 0; i < slen; i++) {
-
-                diff |= (uint)(s1[i] ^ s2[i]);
+                var c1 = s1[i];
+                var c2 = s2[i];
+                var xor = c1 ^ c2;
+                diff |= (uint)xor;
             }
 
             // Checks first if either parameter was null.

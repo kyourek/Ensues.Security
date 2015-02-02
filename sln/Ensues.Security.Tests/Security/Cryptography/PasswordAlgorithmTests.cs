@@ -448,5 +448,65 @@ namespace Ensues.Security.Cryptography {
                 Assert.IsTrue(algo.Compare(password, comp));
             }
         }
+
+        [Test]
+        public void Compute_ThrowsExceptionIfHashFunctionIsInvalid() {
+            var algo = new PasswordAlgorithm();
+            var invalid = Enum.GetValues(typeof(HashFunction)).Cast<short>().Max() + 1;
+            algo.HashFunction = (HashFunction)invalid;
+            var exception = default(Exception);
+            try {
+                algo.Compute("password");
+            }
+            catch (Exception ex) {
+                exception = ex;
+            }
+            Assert.IsNotNull(exception);
+        }
+
+        [Test]
+        public void ConstantTimeComparer_IsDefault() {
+            Assert.AreSame(ConstantTimeComparer.Default, new PasswordAlgorithm().ConstantTimeComparer);
+        }
+
+        [Test]
+        public void VariableTimeComparer_IsOrdinal() {
+            Assert.AreSame(StringComparer.Ordinal, new PasswordAlgorithm().VariableTimeComparer);
+        }
+
+        private static class VariableTimeComparer_UsedWhenCompareInConstantTimeIsFalse_Helper {
+            public class VariableTimeComparer : IEqualityComparer<string> {
+                public Func<string, string, bool> EqualsProxy { get; set; }
+                public bool Equals(string x, string y) {
+                    var p = EqualsProxy;
+                    if (p != null) return p(x, y);
+                    return default(bool);
+                }
+                public int GetHashCode(string obj) {
+                    throw new NotSupportedException();
+                }
+            }
+        }
+
+        [Test]
+        public void VariableTimeComparer_UsedWhenCompareInConstantTimeIsFalse() {
+            var algo = new PasswordAlgorithm();
+            var comparer = new VariableTimeComparer_UsedWhenCompareInConstantTimeIsFalse_Helper.VariableTimeComparer();
+            algo.VariableTimeComparer = comparer;
+            algo.CompareInConstantTime = false;
+            var equal = false;
+            var entered = 0;
+            comparer.EqualsProxy = (x, y) => {
+                entered++;
+                return equal;
+            };
+            var password = "password";
+            var computed = algo.Compute(password);
+            equal = false;
+            Assert.IsFalse(algo.Compare(password, computed));
+            equal = true;
+            Assert.IsTrue(algo.Compare(password, computed));
+            Assert.AreEqual(2, entered);
+        }
     }
 }

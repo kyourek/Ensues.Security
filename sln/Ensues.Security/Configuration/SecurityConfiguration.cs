@@ -1,44 +1,29 @@
 ﻿using System;
 using System.Configuration;
 
+using Ensues.Security.Cryptography;
 namespace Ensues.Configuration {
-
     internal class SecurityConfiguration {
-
         private SecuritySection Section {
-            get {
-                return _Section ?? (_Section = ConfigurationManager.GetSection(SectionName) as SecuritySection);
-            }
+            get { return _Section ?? (_Section = ConfigurationManager.GetSection(SectionName) as SecuritySection); }
         }
         private SecuritySection _Section;
 
-        protected internal SecurityConfiguration() { }
+        protected SecurityConfiguration() { }
 
-        public static SecurityConfiguration Default { 
-            get { return _Default ?? (_Default = new SecurityConfiguration()); }
-            internal set { _Default = value; }
-        }
-        private static SecurityConfiguration _Default = new SecurityConfiguration();
+        public const string SectionName = "ensues.security";
 
-        public string SectionName {
-            get { return _SectionName ?? (_SectionName = "ensues.security"); }
-            set { _SectionName = value; }
-        }
-        private string _SectionName;
+        public static SecurityConfiguration Default { get { return _Default; } }
+        private static readonly SecurityConfiguration _Default = new SecurityConfiguration();
 
-        public IPasswordAlgorithmConfiguration PasswordAlgorithmConfiguration {
-            get {
-                if (_PasswordAlgorithmConfiguration == null) {
-
-                    var section = Section;
-                    if (section != null) {
-                        _PasswordAlgorithmConfiguration = section.PasswordAlgorithm;
-                    }
+        public void ConfigurePasswordAlgorithm(PasswordAlgorithm passwordAlgorithm) {
+            var element = Section;
+            if (element != null) {
+                var elementInformation = element.ElementInformation;
+                if (elementInformation != null && elementInformation.IsPresent) {
+                    element.ConfigurePasswordAlgorithm(passwordAlgorithm);
                 }
-
-                return _PasswordAlgorithmConfiguration;
             }
         }
-        private IPasswordAlgorithmConfiguration _PasswordAlgorithmConfiguration;
     }
 }

@@ -29,5 +29,11 @@ namespace Ensues.Security.Cryptography {
             var c = new ConstantTimeComparer();
             Assert.IsFalse(c.Equals(s1, s2));
         }
+
+        [Test]
+        public void Default_IsInstance() {
+            Assert.IsNotNull(ConstantTimeComparer.Default);
+            Assert.AreSame(ConstantTimeComparer.Default, ConstantTimeComparer.Default);
+        }
     }
 }

@@ -13,10 +13,6 @@ namespace Ensues.Security.Cryptography {
     /// information required to create that hash.
     /// </summary>
     public class PasswordAlgorithm {
-        internal const bool CompareInConstantTimeDefault = true;
-        internal const Int16 SaltLengthDefault = 16;
-        internal const Int32 HashIterationsDefault = 1000;
-        internal const HashFunction HashFunctionDefault = HashFunction.SHA256;
 
         /// <summary>
         /// This is the encoding used to convert a plain-text password
@@ -127,13 +123,24 @@ namespace Ensues.Security.Cryptography {
         }
 
         /// <summary>
-        /// Gets or sets the object used to compare strings in constant time.
+        /// Get or set the comparer that compares strings when 
+        /// <see cref="PasswordAlgorithm.CompareInConstantTime"/> is <c>true</c>.
         /// </summary>
         internal IEqualityComparer<string> ConstantTimeComparer {
-            get { return _ConstantTimeComparer ?? (_ConstantTimeComparer = new ConstantTimeComparer()); }
+            get { return _ConstantTimeComparer ?? (_ConstantTimeComparer = Cryptography.ConstantTimeComparer.Default); }
             set { _ConstantTimeComparer = value; }
         }
         private IEqualityComparer<string> _ConstantTimeComparer;
+
+        /// <summary>
+        /// Get or set the comparer that compares strings when 
+        /// <see cref="PasswordAlgorithm.CompareInConstantTime"/> is <c>false</c>.
+        /// </summary>
+        internal IEqualityComparer<string> VariableTimeComparer {
+            get { return _VariableTimeComparer ?? (_VariableTimeComparer = System.StringComparer.Ordinal); }
+            set { _VariableTimeComparer = value; }
+        }
+        private IEqualityComparer<string> _VariableTimeComparer;
 
         /// <summary>
         /// Gets or sets a value that indicates whether or not a
@@ -144,7 +151,7 @@ namespace Ensues.Security.Cryptography {
             get { return _CompareInConstantTime; }
             set { _CompareInConstantTime = value; }
         }
-        private bool _CompareInConstantTime = CompareInConstantTimeDefault;
+        private bool _CompareInConstantTime = true;
 
         /// <summary>
         /// Gets or sets the <see cref="T:HashFunction"/> used while
@@ -154,7 +161,7 @@ namespace Ensues.Security.Cryptography {
             get { return _HashFunction; }
             set { _HashFunction = value; }
         }
-        private HashFunction _HashFunction = HashFunctionDefault;
+        private HashFunction _HashFunction = HashFunction.SHA256;
 
         /// <summary>
         /// Gets or sets the length, in bytes, of salts created
@@ -167,7 +174,7 @@ namespace Ensues.Security.Cryptography {
                 _SaltLength = value;
             }
         }
-        private Int16 _SaltLength = SaltLengthDefault;
+        private Int16 _SaltLength = 16;
 
         /// <summary>
         /// Gets or sets the number of key-stretching iterations
@@ -180,21 +187,15 @@ namespace Ensues.Security.Cryptography {
                 _HashIterations = value;
             }
         }
-        private Int32 _HashIterations = HashIterationsDefault;
+        private Int32 _HashIterations = 1000;
 
         /// <summary>
         /// Creates a new instance of <see cref="T:PasswordAlgorithm"/>.
         /// </summary>
         public PasswordAlgorithm() {
-            var configuration = SecurityConfiguration
+            SecurityConfiguration
                 .Default
-                .PasswordAlgorithmConfiguration;
-            if (configuration != null) {
-                SaltLength = configuration.SaltLength;
-                HashFunction = configuration.HashFunction;
-                HashIterations = configuration.HashIterations;
-                CompareInConstantTime = configuration.CompareInConstantTime;
-            }
+                .ConfigurePasswordAlgorithm(this);
         }
 
         /// <summary>
@@ -290,12 +291,14 @@ namespace Ensues.Security.Cryptography {
             // using the same algorithm with which it was created.
             var expectedResult = Compute(password, hashFunction, hashIterations, saltBytes);
 
-            // Return whether or not the strings are equal. If
-            // the flag is set, then do the comparison in constant
-            // time.
-            return CompareInConstantTime
-                ? ConstantTimeComparer.Equals(expectedResult, computedResult)
-                : string.Equals(expectedResult, computedResult);
+            // Get the string comparer to use based on whether or not
+            // this algorithm compares strings in constant time.
+            var stringComparer = CompareInConstantTime
+                ? ConstantTimeComparer
+                : VariableTimeComparer;
+
+            // Return the result of the string comparison.
+            return stringComparer.Equals(expectedResult, computedResult);
         }
     }
 }

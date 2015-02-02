@@ -28,7 +28,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\IPasswordAlgorithmConfiguration.cs" />
     <Compile Include="Configuration\SecuritySection.cs" />
     <Compile Include="Configuration\PasswordAlgorithmElement.cs" />
     <Compile Include="Configuration\SecurityConfiguration.cs" />
