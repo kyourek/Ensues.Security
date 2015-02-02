@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 [assembly: Guid("8b9ce40c-a3c7-45a1-88b0-417b09b30ac2")]
 
 [assembly: AssemblyVersion("2.0")]
-[assembly: AssemblyFileVersion("2.0.0.14")]
+[assembly: AssemblyFileVersion("2.0.0.15")]
 [assembly: AssemblyInformationalVersion("2.0.0")]
 
 [assembly: InternalsVisibleTo("Ensues.Security.Tests")]
