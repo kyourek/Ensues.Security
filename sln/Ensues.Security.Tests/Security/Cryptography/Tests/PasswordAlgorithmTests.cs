@@ -253,17 +253,10 @@ namespace Ensues.Security.Cryptography.Tests {
         }
 
         [Test]
-        public void Compare_NullPasswordThrowsException() {
+        public void Compare_NullPasswordReturnsFalse() {
             var pa = new PasswordAlgorithm();
             var cr = pa.Compute("computed result");
-            var ex1 = default(Exception);
-            try { 
-                pa.Compare(null, cr); 
-            }
-            catch (Exception ex) { 
-                ex1 = ex; 
-            }
-            Assert.IsNotNull(ex1);
+            Assert.IsFalse(pa.Compare(null, cr));
         }
 
         [Test]
@@ -294,29 +287,15 @@ namespace Ensues.Security.Cryptography.Tests {
         }
 
         [Test]
-        public void Compare_NullComputedResultThrowsException() {
+        public void Compare_NullComputedResultReturnsFalse() {
             var pa = new PasswordAlgorithm();
-            var ex1 = default(Exception);
-            try { 
-                pa.Compare("password", null); 
-            }
-            catch (Exception ex) { 
-                ex1 = ex; 
-            }
-            Assert.IsNotNull(ex1);
+            Assert.IsFalse(pa.Compare("password", null));
         }
 
         [Test]
-        public void Compare_NullParametersThrowsException() {
+        public void Compare_NullParametersReturnsFalse() {
             var pa = new PasswordAlgorithm();
-            var ex1 = default(Exception);
-            try { 
-                pa.Compare(null, null); 
-            }
-            catch (Exception ex) { 
-                ex1 = ex; 
-            }
-            Assert.IsNotNull(ex1);
+            Assert.IsFalse(pa.Compare(null, null));
         }
 
         [Test]
@@ -399,6 +378,74 @@ namespace Ensues.Security.Cryptography.Tests {
             finally {
                 File.Delete(appConfigFile);
                 SecurityConfiguration.Default = null;
+            }
+        }
+
+        [Test]
+        public void ConstantTimeComparer_IsInstance() {
+            var comparer = new PasswordAlgorithm().ConstantTimeComparer;
+            Assert.IsNotNull(comparer);
+            Assert.AreEqual(typeof(ConstantTimeComparer), comparer.GetType());
+        }
+
+        [Test]
+        public void Compute_ComputesEmptyString() {
+            var algo = new PasswordAlgorithm();
+            var comp = algo.Compute("");
+            Assert.IsFalse(string.IsNullOrWhiteSpace(comp));
+        }
+
+        [Test]
+        public void Compare_ComparesComputedEmptyString() {
+            var algo = new PasswordAlgorithm();
+            var comp = algo.Compute("");
+            Assert.IsTrue(algo.Compare("", comp));
+        }
+
+        [Test]
+        public void Computed_ThrowsArgumentNullException() {
+            var algo = new PasswordAlgorithm();
+            var exception = default(ArgumentNullException);
+            try {
+                algo.Compute(null);
+            }
+            catch (ArgumentNullException ex) {
+                exception = ex;
+            }
+            Assert.IsNotNull(exception);
+            Assert.AreEqual("password", exception.ParamName);
+        }
+
+        [Test]
+        public void Compute_SHA256Creates76CharacterComputation() {
+            var algo = new PasswordAlgorithm();
+            algo.HashFunction = HashFunction.SHA256;
+            foreach (var password in new[] { "", "1234", "password", "asdf1234JKL:", "qwertyuiopasdfghjklzxcvbnm!@#$%^&*()\r\n\t " }) {
+                var comp = algo.Compute(password);
+                Assert.AreEqual(76, comp.Length);
+                Assert.IsTrue(algo.Compare(password, comp));
+            }
+        }
+
+        [Test]
+        public void Compute_SHA384Creates96CharacterComputation() {
+            var algo = new PasswordAlgorithm();
+            algo.HashFunction = HashFunction.SHA384;
+            foreach (var password in new[] { "", "1234", "password", "asdf1234JKL:", "qwertyuiopasdfghjklzxcvbnm!@#$%^&*()\r\n\t " }) {
+                var comp = algo.Compute(password);
+                Assert.AreEqual(96, comp.Length);
+                Assert.IsTrue(algo.Compare(password, comp));
+            }
+        }
+
+        [Test]
+        public void Compute_SHA512Creates120CharacterComputation() {
+            var algo = new PasswordAlgorithm();
+            algo.HashFunction = HashFunction.SHA512;
+            foreach (var password in new[] { "", "1234", "password", "asdf1234JKL:", "qwertyuiopasdfghjklzxcvbnm!@#$%^&*()\r\n\t " }) {
+                var comp = algo.Compute(password);
+                Assert.AreEqual(120, comp.Length);
+                Assert.IsTrue(algo.Compare(password, comp));
             }
         }
     }

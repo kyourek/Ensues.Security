@@ -136,16 +136,6 @@ namespace Ensues.Security.Cryptography {
         private IEqualityComparer<string> _ConstantTimeComparer;
 
         /// <summary>
-        /// Creates a new instance of <see cref="T:RandomNumberGenerator"/>.
-        /// </summary>
-        /// <returns>
-        /// A new instance of <see cref="T:RandomNumberGenerator"/>.
-        /// </returns>
-        protected virtual RandomNumberGenerator CreateRandomNumberGenerator() {
-            return RandomNumberGenerator.Create();
-        }
-
-        /// <summary>
         /// Gets or sets a value that indicates whether or not a
         /// constant-time comparison is used when comparing a password
         /// to its computed result.
@@ -218,11 +208,19 @@ namespace Ensues.Security.Cryptography {
         /// A string that can later be used in <see cref="PasswordAlgorithm.Compare"/>
         /// to determine password validity.
         /// </returns>
-        public virtual string Compute(string password) {
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if <paramref name="password"/> is <c>null</c>.
+        /// </exception>
+        public string Compute(string password) {
+            // A null password here will throw an exception eventually
+            // (even though we don't dereference it here), so we preempt
+            // it and throw an exception immediately.
+            if (null == password) throw new ArgumentNullException("password");
+
             // First, generate a salt using a random number generator.
             var salt = new byte[SaltLength];
-            using (var randomNumberGenerator = CreateRandomNumberGenerator()) {
-                randomNumberGenerator.GetBytes(salt);
+            using (var random = RandomNumberGenerator.Create()) {
+                random.GetBytes(salt);
             }
 
             // Now, perform the same computation that is later performed
@@ -249,7 +247,12 @@ namespace Ensues.Security.Cryptography {
         /// parameter to <see cref="PasswordAlgorithm.Compute(string)"/> that returned
         /// the <paramref name="computedResult"/>. Otherwise, <c>false</c>.
         /// </returns>
-        public virtual bool Compare(string password, string computedResult) {
+        public bool Compare(string password, string computedResult) {
+            // Since this algorithm will never compute a result for
+            // a null password, we immediately reject null arguments
+            // passed to this method.
+            if (null == password) return false;
+            if (null == computedResult) return false;
 
             // All of the password data is encoded as a base-64
             // string, so we start by getting that data as a

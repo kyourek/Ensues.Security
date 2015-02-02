@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="12.0">
   <Import Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
   <PropertyGroup>
@@ -37,7 +38,7 @@
     <Compile Include="Security\Cryptography\PasswordAlgorithm.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="NuGet\Ensues.Security.nuspec">
+    <None Include="nuget\Ensues.Security.nuspec">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
