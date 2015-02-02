@@ -39,7 +39,7 @@ namespace Ensues.Configuration {
 
             File.WriteAllText(AppConfigFile, appConfig);
 
-            using (AppConfig.Change(AppConfigFile)) {
+            using (AlternateAppConfig.Change(AppConfigFile)) {
 
                 var securityConfiguration = new SecurityConfiguration();
                 var passwordAlgorithmConfiguration = securityConfiguration.PasswordAlgorithmConfiguration;
@@ -66,7 +66,7 @@ namespace Ensues.Configuration {
 
             File.WriteAllText(AppConfigFile, appConfig);
 
-            using (AppConfig.Change(AppConfigFile)) {
+            using (AlternateAppConfig.Change(AppConfigFile)) {
 
                 var securityConfiguration = new SecurityConfiguration();
                 var passwordAlgorithmConfiguration = securityConfiguration.PasswordAlgorithmConfiguration;

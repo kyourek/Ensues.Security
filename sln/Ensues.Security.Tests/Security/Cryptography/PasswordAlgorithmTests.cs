@@ -367,7 +367,7 @@ namespace Ensues.Security.Cryptography {
             try {
                 SecurityConfiguration.Default = null;
 
-                using (AppConfig.Change(appConfigFile)) {
+                using (AlternateAppConfig.Change(appConfigFile)) {
                     var pa = new PasswordAlgorithm();
                     Assert.AreEqual(HashFunction.SHA384, pa.HashFunction);
                     Assert.AreEqual(654321, pa.HashIterations);

@@ -5,15 +5,15 @@ using System.Reflection;
 
 namespace Ensues.Configuration {
 
-    internal abstract class AppConfig : IDisposable {
+    internal abstract class AlternateAppConfig : IDisposable {
 
-        public static AppConfig Change(string path) {
+        public static AlternateAppConfig Change(string path) {
             return new ChangeAppConfig(path);
         }
 
         public abstract void Dispose();
 
-        private class ChangeAppConfig : AppConfig {
+        private class ChangeAppConfig : AlternateAppConfig {
 
             private readonly string OldConfig = AppDomain.CurrentDomain.GetData("APP_CONFIG_FILE").ToString();
 
