@@ -6,7 +6,7 @@ using System.Linq;
 using NUnit.Framework;
 
 using Ensues.Configuration;
-namespace Ensues.Security.Cryptography.Tests {
+namespace Ensues.Security.Cryptography {
     [TestFixture]
     public class PasswordAlgorithmTests {
         private class MockConstantTimeComparer : IEqualityComparer<string> {

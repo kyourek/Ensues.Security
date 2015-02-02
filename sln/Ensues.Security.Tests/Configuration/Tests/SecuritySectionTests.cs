@@ -4,7 +4,7 @@ using System.IO;
 using NUnit.Framework;
 
 using Ensues.Security.Cryptography;
-namespace Ensues.Configuration.Tests {
+namespace Ensues.Configuration {
     
     [TestFixture]
     public class SecuritySectionTests {

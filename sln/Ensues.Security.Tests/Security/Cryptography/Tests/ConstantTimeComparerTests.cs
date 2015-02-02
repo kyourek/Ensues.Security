@@ -3,7 +3,7 @@ using System.Linq;
 
 using NUnit.Framework;
 
-namespace Ensues.Security.Cryptography.Tests {
+namespace Ensues.Security.Cryptography {
     [TestFixture]
     public class ConstantTimeComparerTests {
         [Test]
