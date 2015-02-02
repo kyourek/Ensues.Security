@@ -35,7 +35,7 @@ namespace Ensues.Configuration {
                 </configuration>
             ";
             File.WriteAllText(AppConfigFile, appConfig);
-            using (AlternateAppConfig.Change(AppConfigFile)) {
+            using (AppConfig.Change(AppConfigFile)) {
                 var securityConfiguration = new SecurityConfiguration();
                 var passwordAlgorithmConfiguration = securityConfiguration.PasswordAlgorithmConfiguration;
                 Assert.AreEqual(HashFunction.SHA384, passwordAlgorithmConfiguration.HashFunction);
@@ -58,7 +58,7 @@ namespace Ensues.Configuration {
                 </configuration>
             ";
             File.WriteAllText(AppConfigFile, appConfig);
-            using (AlternateAppConfig.Change(AppConfigFile)) {
+            using (AppConfig.Change(AppConfigFile)) {
                 var securityConfiguration = new SecurityConfiguration();
                 var passwordAlgorithmConfiguration = securityConfiguration.PasswordAlgorithmConfiguration;
                 Assert.AreEqual(PasswordAlgorithm.HashFunctionDefault, passwordAlgorithmConfiguration.HashFunction);
