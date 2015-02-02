@@ -21,6 +21,11 @@ namespace Ensues.Security.Cryptography {
             }
         }
 
+        [SetUp]
+        public void SetUp() {
+            SecurityConfiguration.Default.Reset();
+        }
+
         [Test]
         public void SaltLength_IsInitially16() {
             Assert.AreEqual(16, new PasswordAlgorithm().SaltLength);
@@ -83,7 +88,7 @@ namespace Ensues.Security.Cryptography {
                 .Range(0, 100)
                 .Select(_ => "abcdefghijklmnopqrstuvwxyz0123456789")
                 .Aggregate((s1, s2) => s1 + s2 + "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-           var algo = new PasswordAlgorithm();
+            var algo = new PasswordAlgorithm();
             var computed = algo.Compute(password);
             Assert.IsTrue(algo.Compare(password, computed));
             var incorrectPassword = password.Remove(0, 1);
@@ -363,10 +368,7 @@ namespace Ensues.Security.Cryptography {
             ";
 
             File.WriteAllText(appConfigFile, appConfig);
-
             try {
-                SecurityConfiguration.Default = null;
-
                 using (AppConfig.Change(appConfigFile)) {
                     var pa = new PasswordAlgorithm();
                     Assert.AreEqual(HashFunction.SHA384, pa.HashFunction);
@@ -377,7 +379,6 @@ namespace Ensues.Security.Cryptography {
             }
             finally {
                 File.Delete(appConfigFile);
-                SecurityConfiguration.Default = null;
             }
         }
 
@@ -507,6 +508,83 @@ namespace Ensues.Security.Cryptography {
             equal = true;
             Assert.IsTrue(algo.Compare(password, computed));
             Assert.AreEqual(2, entered);
+        }
+
+        [Test]
+        public void Constructor_ConfiguredFromAppConfig() {
+            var appConfig = @"<?xml version='1.0'?>
+                <configuration>
+                    <configSections>
+                        <section name='ensues.security' type='Ensues.Configuration.SecuritySection, Ensues.Security' />
+                    </configSections>
+                    <ensues.security>
+                        <passwordAlgorithm hashFunction='SHA384' hashIterations='123456' compareInConstantTime='false' saltLength='321' />
+                    </ensues.security>
+                </configuration>
+            ";
+            using (AppConfig.With(appConfig)) {
+                var algo = new PasswordAlgorithm();
+                Assert.AreEqual(HashFunction.SHA384, algo.HashFunction);
+                Assert.AreEqual(123456, algo.HashIterations);
+                Assert.AreEqual(false, algo.CompareInConstantTime);
+                Assert.AreEqual(321, algo.SaltLength);
+            }
+        }
+
+        [Test]
+        public void Constructor_UsesDefaultsIfNotProvidedInAppConfig() {
+            var appConfig = @"<?xml version='1.0'?>
+                <configuration>
+                    <configSections>
+                        <section name='ensues.security' type='Ensues.Configuration.SecuritySection, Ensues.Security' />
+                    </configSections>
+                    <ensues.security>
+                        <passwordAlgorithm />
+                    </ensues.security>
+                </configuration>
+            ";
+            using (AppConfig.With(appConfig)) {
+                var algo = new PasswordAlgorithm();
+                Assert.AreEqual(HashFunction.SHA256, algo.HashFunction);
+                Assert.AreEqual(1000, algo.HashIterations);
+                Assert.AreEqual(true, algo.CompareInConstantTime);
+                Assert.AreEqual(16, algo.SaltLength);
+            }
+        }
+
+        [Test]
+        public void Constructor_UsesDefaultsIfSectionDoesNotExistInAppConfig() {
+            var appConfig = @"<?xml version='1.0'?>
+                <configuration>
+                </configuration>
+            ";
+            using (AppConfig.With(appConfig)) {
+                var algo = new PasswordAlgorithm();
+                Assert.AreEqual(HashFunction.SHA256, algo.HashFunction);
+                Assert.AreEqual(1000, algo.HashIterations);
+                Assert.AreEqual(true, algo.CompareInConstantTime);
+                Assert.AreEqual(16, algo.SaltLength);
+            }
+        }
+
+        [Test]
+        public void Constructor_UsesDefaultsIfElementDoesNotExistInAppConfig() {
+            var appConfig = @"<?xml version='1.0'?>
+                <configuration>
+                    <configSections>
+                        <section name='ensues.security' type='Ensues.Configuration.SecuritySection, Ensues.Security' />
+                    </configSections>
+                    <ensues.security>
+                    </ensues.security>
+                </configuration>
+            ";
+            using (AppConfig.With(appConfig)) {
+                var algo = new PasswordAlgorithm();
+                Assert.AreEqual(HashFunction.SHA256, algo.HashFunction);
+                Assert.AreEqual(1000, algo.HashIterations);
+                Assert.AreEqual(true, algo.CompareInConstantTime);
+                Assert.AreEqual(16, algo.SaltLength);
+            }
         }
     }
 }

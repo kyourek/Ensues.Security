@@ -3,9 +3,15 @@ using System.Linq;
 
 using NUnit.Framework;
 
+using Ensues.Configuration;
 namespace Ensues.Security.Cryptography {
     [TestFixture]
     public class PasswordGeneratorTests {
+        [SetUp]
+        public void SetUp() {
+            SecurityConfiguration.Default.Reset();
+        }
+
         [Test]
         public void Generate_GeneratesString() {
             var gen = new PasswordGenerator();
@@ -117,6 +123,70 @@ namespace Ensues.Security.Cryptography {
             var pass = gen.Generate();
             var expected = new string(Enumerable.Range(0, 50).Select(_ => '1').ToArray());
             Assert.AreEqual(expected, pass);
+        }
+
+        [Test]
+        public void Generate_GeneratesEmptyPassword() {
+            var gen = new PasswordGenerator { Length = 0 };
+            Assert.AreEqual("", gen.Generate());
+        }
+
+        [Test]
+        public void Generate_GeneratesRandomPassword() {
+            var gen = new PasswordGenerator();
+            var passwords = Enumerable.Range(0, 10).Select(_ => gen.Generate()).ToList();
+            Assert.AreEqual(10, passwords.Distinct().Count());
+        }
+
+        [Test]
+        public void Constructor_PropertiesSetViaAppConfig() {
+            var appConfig = @"<?xml version='1.0'?>
+                <configuration>
+                    <configSections>
+                        <section name='ensues.security' type='Ensues.Configuration.SecuritySection, Ensues.Security' />
+                    </configSections>
+                    <ensues.security>
+                        <passwordGenerator length='100' symbols='abcdefghijklmnopqrstuvwxyz' />
+                    </ensues.security>
+                </configuration>
+            ";
+            using (AppConfig.With(appConfig)) {
+                var gen = new PasswordGenerator();
+                Assert.AreEqual(100, gen.Length);
+                Assert.AreEqual("abcdefghijklmnopqrstuvwxyz", gen.Symbols);
+            }
+        }
+
+        [Test]
+        public void Constructor_PropertiesDefaultIfNotSetInAppConfig() {
+            var appConfig = @"<?xml version='1.0'?>
+                <configuration>
+                    <configSections>
+                        <section name='ensues.security' type='Ensues.Configuration.SecuritySection, Ensues.Security' />
+                    </configSections>
+                    <ensues.security>
+                        <passwordGenerator />
+                    </ensues.security>
+                </configuration>
+            ";
+            using (AppConfig.With(appConfig)) {
+                var gen = new PasswordGenerator();
+                Assert.AreEqual(10, gen.Length);
+                Assert.AreEqual("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", gen.Symbols);
+            }
+        }
+
+        [Test]
+        public void Constructor_PropertiesDefaultIfSectionDoesNotExistInAppConfig() {
+            var appConfig = @"<?xml version='1.0'?>
+                <configuration>
+                </configuration>
+            ";
+            using (AppConfig.With(appConfig)) {
+                var gen = new PasswordGenerator();
+                Assert.AreEqual(10, gen.Length);
+                Assert.AreEqual("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", gen.Symbols);
+            }
         }
     }
 }

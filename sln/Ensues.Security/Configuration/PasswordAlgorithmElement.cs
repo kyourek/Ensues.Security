@@ -16,7 +16,7 @@ namespace Ensues.Configuration {
             set { this["hashFunction"] = value; }
         }
 
-        [ConfigurationProperty("saltLength", IsRequired = false, DefaultValue = 16)]
+        [ConfigurationProperty("saltLength", IsRequired = false, DefaultValue = (Int16)16)]
         public Int16 SaltLength {
             get { return (Int16)this["saltLength"]; }
             set { this["saltLength"] = value; }

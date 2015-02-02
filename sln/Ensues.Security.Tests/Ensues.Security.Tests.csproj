@@ -46,7 +46,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Configuration\AppConfig.cs" />
-    <Compile Include="Configuration\SecuritySectionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\Cryptography\ConstantTimeComparerTests.cs" />
     <Compile Include="Security\Cryptography\PasswordAlgorithmTests.cs" />
