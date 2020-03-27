@@ -4,7 +4,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-using Ensues.Configuration;
 namespace Ensues.Security.Cryptography {
 
     /// <summary>
@@ -193,9 +192,6 @@ namespace Ensues.Security.Cryptography {
         /// Creates a new instance of <see cref="T:PasswordAlgorithm"/>.
         /// </summary>
         public PasswordAlgorithm() {
-            SecurityConfiguration
-                .Default
-                .ConfigurePasswordAlgorithm(this);
         }
 
         /// <summary>

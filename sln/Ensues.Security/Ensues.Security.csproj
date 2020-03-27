@@ -1,51 +1,7 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="12.0">
-  <Import Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{226C4BD4-624B-421D-93D0-88605569E0A2}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Ensues</RootNamespace>
-    <AssemblyName>Ensues.Security</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Ensues.Security.xml</DocumentationFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Configuration\PasswordGeneratorElement.cs" />
-    <Compile Include="Configuration\SecuritySection.cs" />
-    <Compile Include="Configuration\PasswordAlgorithmElement.cs" />
-    <Compile Include="Configuration\SecurityConfiguration.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Security\Cryptography\ConstantTimeComparer.cs" />
-    <Compile Include="Security\Cryptography\HashFunction.cs" />
-    <Compile Include="Security\Cryptography\PasswordAlgorithm.cs" />
-    <Compile Include="Security\Cryptography\PasswordGenerator.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="npcknpsh\build.py" />
-    <None Include="npcknpsh\buildconfig.py" />
-    <None Include="npcknpsh\project.py" />
-    <None Include="npcknpsh\projectconfig.py" />
-    <None Include="npcknpsh\__init__.py" />
-    <None Include="nuget\Ensues.Security.nuspec">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
+    <PropertyGroup>
+        <TargetFrameworks>net40;net45;netcoreapp3.1</TargetFrameworks>
+        <RootNamespace>Ensues</RootNamespace>
+        <Description>Ensues Security</Description>
+    </PropertyGroup>
 </Project>

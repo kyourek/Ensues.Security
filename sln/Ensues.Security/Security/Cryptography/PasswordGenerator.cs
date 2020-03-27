@@ -2,7 +2,6 @@
 using System.Security.Cryptography;
 using System.Text;
 
-using Ensues.Configuration;
 namespace Ensues.Security.Cryptography {
     /// <summary>
     /// Generate a cryptographically secure random password.
@@ -63,9 +62,6 @@ namespace Ensues.Security.Cryptography {
         /// Creates a new instance of the <see cref="T:PasswordGenerator"/>.
         /// </summary>
         public PasswordGenerator() {
-            SecurityConfiguration
-                .Default
-                .ConfigurePasswordGenerator(this);
         }
 
         /// <summary>
