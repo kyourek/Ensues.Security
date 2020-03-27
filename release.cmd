@@ -1,0 +1,1 @@
+dotnet .\sln\Ensues.Security.Release\bin\Debug\netcoreapp3.1\Ensues.Security.Release.dll %*
