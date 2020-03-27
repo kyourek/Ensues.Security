@@ -1,23 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project>
-    <PropertyGroup>
-        <Authors>Ken Yourek</Authors>
-        <Copyright>Copyright © Ken Yourek 2014-2020</Copyright>
-        <VersionPrefix>3.0.0.0</VersionPrefix>
-        <VersionSuffix></VersionSuffix>
-        <AssemblyVersion>3.0.0.0</AssemblyVersion>
-        <InformationalVersion>3.0.0.0</InformationalVersion>
-        <FileVersion>3.0.0.0</FileVersion>
-        <PackageVersion>3.0.0.0</PackageVersion>
-        <PackageProjectUrl>https://github.com/kyourek/Ensues.Security</PackageProjectUrl>
-        <RepositoryType>git</RepositoryType>
-        <RepositoryUrl>https://github.com/kyourek/Ensues.Security.git</RepositoryUrl>
-        <RepositoryBranch></RepositoryBranch>
-        <RepositoryCommit></RepositoryCommit>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-        <PackageTags></PackageTags>
-        <IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    </PropertyGroup>
+  <PropertyGroup>
+    <Authors>Ken Yourek</Authors>
+    <Copyright>Copyright © Ken Yourek 2014-2020</Copyright>
+    <VersionPrefix>3.0.0.1</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
+    <AssemblyVersion>3.0.0.1</AssemblyVersion>
+    <InformationalVersion>3.0.0.1</InformationalVersion>
+    <FileVersion>3.0.0.1</FileVersion>
+    <PackageVersion>3.0.0.1</PackageVersion>
+    <PackageProjectUrl>https://github.com/kyourek/Ensues.Security</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/kyourek/Ensues.Security.git</RepositoryUrl>
+    <RepositoryBranch>master</RepositoryBranch>
+    <RepositoryCommit>15a61a87b9f0407aa5a7e68babdd1fab581c6cea</RepositoryCommit>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags></PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
 </Project>
